@@ -544,6 +544,118 @@ int searchNodewithnameofpro(struct pronode *head_ref, char *name)
       return 0;
 }
 
+void sortlinkedlistActoNumbersofpro(struct pronode **pronode)
+{
+      struct pronode *current = *pronode, *index = NULL;
+      if (pronode == NULL)
+      {
+            return;
+      }
+      else
+      {
+            while (current->next != NULL)
+            {
+                  index = current->next;
+                  while (index != NULL)
+                  {
+                        if (current->number > index->number)
+                        {
+                              int mo = current->mobile;
+                              char na[20];
+                              char lna[20];
+                              char type[20];
+                              char email[20];
+                              char company[20];
+                              int office = current->number;
+
+                              strcpy(na, current->name);
+                              strcpy(current->name, index->name);
+                              strcpy(index->name, na);
+
+                              strcpy(lna, current->lname);
+                              strcpy(current->lname, index->lname);
+                              strcpy(index->lname, lna);
+
+                              strcpy(type, current->type);
+                              strcpy(current->type, index->type);
+                              strcpy(index->type, type);
+
+                              strcpy(email, current->email);
+                              strcpy(current->email, index->email);
+                              strcpy(index->email, email);
+
+                              strcpy(company, current->office);
+                              strcpy(current->office, index->office);
+                              strcpy(index->office, company);
+
+                              current->mobile = index->mobile;
+                              index->mobile = mo;
+
+                              current->number = index->number;
+                              index->number = office;
+                        }
+                        index = index->next;
+                  }
+                  current = current->next;
+            }
+      }
+}
+
+void sortlinkedlistdecendingofpro(struct pronode **head_ref){
+      struct pronode *current = *head_ref, *index = NULL;
+      if (head_ref == NULL)
+      {
+            return;
+      }
+      else
+      {
+            while (current->next != NULL)
+            {
+                  index = current->next;
+                  while (index != NULL)
+                  {
+                        if (current->mobile < index->mobile)
+                        {
+                              int mo = current->mobile;
+                              char na[20];
+                              char lna[20];
+                              char type[20];
+                              char email[20];
+                              char company[20];
+                              int office = current->number;
+
+                              strcpy(na, current->name);
+                              strcpy(current->name, index->name);
+                              strcpy(index->name, na);
+
+                              strcpy(lna, current->lname);
+                              strcpy(current->lname, index->lname);
+                              strcpy(index->lname, lna);
+
+                              strcpy(type, current->type);
+                              strcpy(current->type, index->type);
+                              strcpy(index->type, type);
+
+                              strcpy(email, current->email);
+                              strcpy(current->email, index->email);
+                              strcpy(index->email, email);
+
+                              strcpy(company, current->office);
+                              strcpy(current->office, index->office);
+                              strcpy(index->office, company);
+
+                              current->mobile = index->mobile;
+                              index->mobile = mo;
+
+                              current->number = index->number;
+                              index->number = office;
+                        }
+                        index = index->next;
+                  }
+                  current = current->next;
+            }
+      }
+}
 int main()
 {
       struct node *head = NULL;
@@ -813,8 +925,34 @@ int main()
                         }
                   }
                   else if (ch == 2)
-                  {
-                        sortlinkedlistActoNamesofpro(&prohead);
+                  {     
+                        printf("Enter 1 to sorting the contact list with mobile numbers \n");
+                        printf("Enter 2 for sorting the contact list with names \n");
+                        int input1;
+                        scanf("%d", &input1);
+                        if (input1 == 1)
+                        {
+                              printf("enter 1 to sort the contact list with mobile numbers in ascending order\n");
+                              printf("enter 2 to sort the contact list with mobile numbers in descending order\n");
+                              int inp;
+                              scanf("%d", &inp);
+                              if (inp == 1)
+                              {
+                                    sortlinkedlistActoNumbersofpro(&prohead);
+                              }
+                              else if (inp == 2)
+                              {
+                                    sortlinkedlistdecendingofpro(&prohead);
+                              }
+                              else
+                              {
+                                    printf("Invalid choice \n");
+                              }
+                        }
+                        else
+                        {
+                              sortlinkedlistActoNamesofpro(&prohead);
+                        }
                   }
                   else
                   {
