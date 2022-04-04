@@ -82,10 +82,10 @@ void DeleteContact(struct node **head_ref, int key)
       return;
 }
 
-void DeleteContactwithname(struct node **head_ref, char *name)
+void DeleteContactwithname(struct node **head_ref, char *name, char *lname)
 {
       struct node *temp = *head_ref, *prev;
-      if (temp != NULL && strcmp(temp->name, name) == 0)
+      if (temp != NULL && strcmp(temp->name, name) == 0 && (strcmp(temp->lname, lname) == 0))
       {
             *head_ref = temp->next;
             free(temp);
@@ -311,7 +311,7 @@ void removeduplicateswithNames(struct node **head_ref)
       {
             while (current->next != NULL)
             {
-                  if (strcmp(current->name, index->name) == 0)
+                  if (strcmp(current->name, current->next->name) == 0)
                   {
                         index = current->next;
                         current->next = current->next->next;
@@ -445,7 +445,32 @@ void removeduplicateswithnamesOfProNode(struct pronode **head_ref)
       {
             while (current->next != NULL)
             {
-                  if (strcmp(current->name, index->name) == 0)
+                  if (strcmp(current->name, current->next->name) == 0)
+                  {
+                        index = current->next;
+                        current->next = current->next->next;
+                        free(index);
+                  }
+                  else
+                  {
+                        current = current->next;
+                  }
+            }
+      }
+}
+
+void removeduplicateswithNumbersofpro(struct pronode **head_ref)
+{
+      struct pronode *current = *head_ref, *index = NULL;
+      if (head_ref == NULL)
+      {
+            return;
+      }
+      else
+      {
+            while (current->next != NULL)
+            {
+                  if (current->mobile == current->next->mobile)
                   {
                         index = current->next;
                         current->next = current->next->next;
@@ -601,7 +626,8 @@ void sortlinkedlistActoNumbersofpro(struct pronode **pronode)
       }
 }
 
-void sortlinkedlistdecendingofpro(struct pronode **head_ref){
+void sortlinkedlistdecendingofpro(struct pronode **head_ref)
+{
       struct pronode *current = *head_ref, *index = NULL;
       if (head_ref == NULL)
       {
@@ -655,6 +681,52 @@ void sortlinkedlistdecendingofpro(struct pronode **head_ref){
                   current = current->next;
             }
       }
+}
+
+void DeleteProfContact(struct pronode **head_ref,int key){
+      struct pronode *temp = *head_ref, *prev;
+      if (temp != NULL && temp->mobile == key)
+      {
+            *head_ref = temp->next;
+            free(temp);
+            return;
+      }
+      while (temp != NULL && temp->mobile != key)
+      {
+            prev = temp;
+            temp = temp->next;
+      }
+      if (temp == NULL)
+      {
+            printf("The given Mobile number is not present in the list\n");
+            return;
+      }
+      prev->next = temp->next;
+      free(temp);
+      return;
+}
+void DeleteprofContactwithname(struct pronode **head_ref, char *name, char *lname)
+{
+      struct pronode *temp = *head_ref, *prev;
+      if (temp != NULL && strcmp(temp->name, name) == 0 && (strcmp(temp->lname, lname) == 0))
+      {
+            *head_ref = temp->next;
+            free(temp);
+            return;
+      }
+      while (temp != NULL && strcmp(temp->name, name) != 0)
+      {
+            prev = temp;
+            temp = temp->next;
+      }
+      if (temp == NULL)
+      {
+            printf("The given name is not present in the list\n");
+            return;
+      }
+      prev->next = temp->next;
+      free(temp);
+      return;
 }
 int main()
 {
@@ -775,30 +847,72 @@ int main()
                   }
                   break;
             case 3: //?  not done
-                  printf("enter 1 to delete the contact with mobile number \n");
-                  printf("enter 2 to delete the contact with name \n");
-                  int choice4;
-                  scanf("%d", &choice4);
-                  if (choice4 == 1)
+                  printf("Enter 1 for personal contact and 2 for profectional contact\t:");
+                  int inp = 0;
+                  scanf("%d", &inp);
+                  if (inp == 1)
                   {
-                        printf("Enter the mobile number of the contact to be deleted \n");
-                        int mobile2;
-                        scanf("%d", &mobile2);
-                        DeleteContact(&head, mobile2);
+                        printf("enter 1 to delete the contact with mobile number \n");
+                        printf("enter 2 to delete the contact with name \n");
+                        int choice4;
+                        scanf("%d", &choice4);
+                        if (choice4 == 1)
+                        {
+                              printf("Enter the mobile number of the contact to be deleted \n");
+                              int mobile2;
+                              scanf("%d", &mobile2);
+                              DeleteContact(&head, mobile2);
+                        }
+                        else if (choice4 == 2)
+                        {
+                              printf("Enter the name of the contact to be deleted \n");
+                              char name2[100] = "";
+                              scanf("%s", name2);
+                              printf("Enter the last name of the contact to be deleted \n");
+                              char lname2[100] = "";
+                              scanf("%s", lname2);
+                              DeleteContactwithname(&head, name2, lname2);
+                        }
+                        else
+                        {
+                              printf("Invalid choice \n");
+                        }
                   }
-                  else if (choice4 == 2)
+                  else if (inp == 2)
                   {
-                        printf("Enter the name of the contact to be deleted \n");
-                        char name2[100] = "";
-                        scanf("%s", name2);
-                        DeleteContactwithname(&head, name2);
+                        printf("enter 1 to delete the contact with mobile number \n");
+                        printf("enter 2 to delete the contact with name \n");
+                        int choice4;
+                        scanf("%d", &choice4);
+                        if (choice4 == 1)
+                        {
+                              printf("Enter the mobile number of the contact to be deleted \n");
+                              int mobile2;
+                              scanf("%d", &mobile2);
+                              DeleteProfContact(&prohead, mobile2);
+                        }
+                        else if (choice4 == 2)
+                        {
+                              printf("Enter the name of the contact to be deleted \n");
+                              char name2[100] = "";
+                              scanf("%s", name2);
+                              printf("Enter the last name of the contact to be deleted \n");
+                              char lname2[100] = "";
+                              scanf("%s", lname2);
+                              DeleteprofContactwithname(&prohead, name2, lname2);
+                        }
+                        else
+                        {
+                              printf("Invalid choice \n");
+                        }
                   }
                   else
                   {
-                        printf("Invalid choice \n");
+                        printf("Invalid choice\n");
                   }
+
                   break;
-            case 4://* done
+            case 4: //* done
                   printf("Enter 1 for personal contact and 2 for profectional contact\t:");
                   int cho = 0;
                   scanf("%d", &cho);
@@ -890,7 +1004,7 @@ int main()
                   }
 
                   break;
-            case 5://* done
+            case 5: //* done
                   printf("Enter 1 for personal contact and 2 for profectional contact\t:");
                   int ch = 0;
                   scanf("%d", &ch);
@@ -925,7 +1039,7 @@ int main()
                         }
                   }
                   else if (ch == 2)
-                  {     
+                  {
                         printf("Enter 1 to sorting the contact list with mobile numbers \n");
                         printf("Enter 2 for sorting the contact list with names \n");
                         int input1;
@@ -960,7 +1074,7 @@ int main()
                   }
 
                   break;
-            case 6://* done
+            case 6: //* done
                   printf("enter 1 to print personal contact list and 2 to print profectional contact list: \n");
                   int choice8;
                   scanf("%d", &choice8);
@@ -978,7 +1092,7 @@ int main()
                   }
 
                   break;
-            case 7://* done
+            case 7: //* done
                   printf("enter 1 to print personal contact list and 2 to merge in profectional contact list: \n");
                   int choice9;
                   scanf("%d", &choice9);
@@ -1042,9 +1156,9 @@ int main()
                               scanf("%d", &office);
                               insertProfessionalContact(&listmerge, mobile, name, lname, type, email, company, office);
                         }
-                        
-                         sortlinkedlistActoNumbersofpro(&listmerge);
-                         sortlinkedlistActoNumbersofpro(&prohead);
+
+                        sortlinkedlistActoNumbersofpro(&listmerge);
+                        sortlinkedlistActoNumbersofpro(&prohead);
                         mergeprofectional(listmerge, prohead);
                   }
                   else
@@ -1053,7 +1167,7 @@ int main()
                   }
 
                   break;
-            case 8: // ! not done completely commented not working
+            case 8: // * done
                   printf("enter 1 to print personal contact list and 2 to remove duplicates profectional contact list: \n");
                   int choice10;
                   scanf("%d", &choice10);
@@ -1071,7 +1185,7 @@ int main()
                         else
                         {
                               sortlinkedlistActoNames(&head);
-                              // removeduplicateswithNames(&head);
+                              removeduplicateswithNames(&head);
                         }
                   }
                   else if (choice10 == 2)
@@ -1082,9 +1196,8 @@ int main()
                         scanf("%d", &choice2);
                         if (choice2 == 1)
                         {
-                              printf("Enter 1 for removing the duplicates ac to mobile number\n");
-                              // sortlinkedlistActoNumbersofpro(&prohead);
-                              //       removeduplicateswithNumbers(&prohead);
+                              sortlinkedlistActoNumbersofpro(&prohead);
+                              removeduplicateswithNumbersofpro(&prohead);
                         }
                         else
                         {
