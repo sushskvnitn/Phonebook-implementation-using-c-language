@@ -20,6 +20,46 @@ struct pronode
       char type[10];
       struct pronode *next;
 };
+
+void sortlinkedlistActoNames(struct node **head_ref)
+{
+      struct node *current = *head_ref, *index = NULL;
+      char temp[100];
+      if (head_ref == NULL)
+      {
+            return;
+      }
+      else
+      {
+            while (current != NULL)
+            {
+                  index = current->next;
+                  while (index != NULL)
+                  {
+                        if (strcmp(current->name, index->name) > 0)
+                        {
+                              strcpy(temp, current->name);
+                              strcpy(current->name, index->name);
+                              strcpy(index->name, temp);
+
+                              strcpy(temp, current->lname);
+                              strcpy(current->lname, index->lname);
+                              strcpy(index->lname, temp);
+                              int mo = current->mobile;
+                              current->mobile = index->mobile;
+                              index->mobile = mo;
+
+                              strcpy(temp, current->type);
+                              strcpy(current->type, index->type);
+                              strcpy(index->type, temp);
+                        }
+                        index = index->next;
+                  }
+                  current = current->next;
+            }
+      }
+}
+
 void insertContact(struct node **head, int mob, char *na, char *lna, char *type)
 {
       struct node *newnode = (struct node *)malloc(sizeof(struct node));
@@ -39,6 +79,7 @@ void insertContact(struct node **head, int mob, char *na, char *lna, char *type)
             temp = temp->next;
       }
       temp->next = newnode;
+      sortlinkedlistActoNames(head);
       return;
 }
 
@@ -235,44 +276,6 @@ void sortlinkedlistdecending(struct node **head_ref)
       }
 }
 
-void sortlinkedlistActoNames(struct node **head_ref)
-{
-      struct node *current = *head_ref, *index = NULL;
-      char temp[100];
-      if (head_ref == NULL)
-      {
-            return;
-      }
-      else
-      {
-            while (current != NULL)
-            {
-                  index = current->next;
-                  while (index != NULL)
-                  {
-                        if (strcmp(current->name, index->name) > 0)
-                        {
-                              strcpy(temp, current->name);
-                              strcpy(current->name, index->name);
-                              strcpy(index->name, temp);
-
-                              strcpy(temp, current->lname);
-                              strcpy(current->lname, index->lname);
-                              strcpy(index->lname, temp);
-                              int mo = current->mobile;
-                              current->mobile = index->mobile;
-                              index->mobile = mo;
-
-                              strcpy(temp, current->type);
-                              strcpy(current->type, index->type);
-                              strcpy(index->type, temp);
-                        }
-                        index = index->next;
-                  }
-                  current = current->next;
-            }
-      }
-}
 
 void removeduplicateswithNumbers(struct node **head_ref)
 {
@@ -345,6 +348,63 @@ struct node *merge(struct node *h1, struct node *h2)
 }
 
 // TODO: PROFECTIONAL NODES AND LINKED LIST
+void sortlinkedlistActoNamesofpro(struct pronode **pronode)
+{
+      struct pronode *current = *pronode, *index = NULL;
+      if (pronode == NULL)
+      {
+            return;
+      }
+      else
+      {
+            while (current->next != NULL)
+            {
+                  index = current->next;
+                  while (index != NULL)
+                  {
+                        if (strcmp(current->name, index->name) > 0)
+                        {
+                              int mo = current->mobile;
+                              char na[20];
+                              char lna[20];
+                              char type[20];
+                              char email[20];
+                              char company[20];
+                              int office = current->number;
+
+                              strcpy(na, current->name);
+                              strcpy(current->name, index->name);
+                              strcpy(index->name, na);
+
+                              strcpy(lna, current->lname);
+                              strcpy(current->lname, index->lname);
+                              strcpy(index->lname, lna);
+
+                              strcpy(type, current->type);
+                              strcpy(current->type, index->type);
+                              strcpy(index->type, type);
+
+                              strcpy(email, current->email);
+                              strcpy(current->email, index->email);
+                              strcpy(index->email, email);
+
+                              strcpy(company, current->office);
+                              strcpy(current->office, index->office);
+                              strcpy(index->office, company);
+
+                              current->mobile = index->mobile;
+                              index->mobile = mo;
+
+                              current->number = index->number;
+                              index->number = office;
+                        }
+                        index = index->next;
+                  }
+                  current = current->next;
+            }
+      }
+}
+
 void insertProfessionalContact(struct pronode **prohead, int mob, char *na, char *lna, char *type, char *email, char *office, int number)
 {
       struct pronode *newnode = (struct pronode *)malloc(sizeof(struct pronode));
@@ -367,6 +427,7 @@ void insertProfessionalContact(struct pronode **prohead, int mob, char *na, char
             temp = temp->next;
       }
       temp->next = newnode;
+      sortlinkedlistActoNamesofpro(prohead);
       return;
 }
 
@@ -480,63 +541,6 @@ void removeduplicateswithNumbersofpro(struct pronode **head_ref)
                   {
                         current = current->next;
                   }
-            }
-      }
-}
-
-void sortlinkedlistActoNamesofpro(struct pronode **pronode)
-{
-      struct pronode *current = *pronode, *index = NULL;
-      if (pronode == NULL)
-      {
-            return;
-      }
-      else
-      {
-            while (current->next != NULL)
-            {
-                  index = current->next;
-                  while (index != NULL)
-                  {
-                        if (strcmp(current->name, index->name) > 0)
-                        {
-                              int mo = current->mobile;
-                              char na[20];
-                              char lna[20];
-                              char type[20];
-                              char email[20];
-                              char company[20];
-                              int office = current->number;
-
-                              strcpy(na, current->name);
-                              strcpy(current->name, index->name);
-                              strcpy(index->name, na);
-
-                              strcpy(lna, current->lname);
-                              strcpy(current->lname, index->lname);
-                              strcpy(index->lname, lna);
-
-                              strcpy(type, current->type);
-                              strcpy(current->type, index->type);
-                              strcpy(index->type, type);
-
-                              strcpy(email, current->email);
-                              strcpy(current->email, index->email);
-                              strcpy(index->email, email);
-
-                              strcpy(company, current->office);
-                              strcpy(current->office, index->office);
-                              strcpy(index->office, company);
-
-                              current->mobile = index->mobile;
-                              index->mobile = mo;
-
-                              current->number = index->number;
-                              index->number = office;
-                        }
-                        index = index->next;
-                  }
-                  current = current->next;
             }
       }
 }
@@ -772,7 +776,6 @@ int main()
                   if (choice6 == 1)
                   {
                         insertContact(&head, mobile, name, lname, type);
-                        sortlinkedlistActoNames(&head);
                         printf(">>>>>>>>>success\n");
                   }
                   else if (choice6 == 2)
@@ -846,7 +849,7 @@ int main()
                         printf("Invalid choice\n");
                   }
                   break;
-            case 3: //?  not done
+            case 3: //* done
                   printf("Enter 1 for personal contact and 2 for profectional contact\t:");
                   int inp = 0;
                   scanf("%d", &inp);
