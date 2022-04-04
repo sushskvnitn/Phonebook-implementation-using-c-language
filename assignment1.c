@@ -890,7 +890,7 @@ int main()
                   }
 
                   break;
-            case 5:
+            case 5://* done
                   printf("Enter 1 for personal contact and 2 for profectional contact\t:");
                   int ch = 0;
                   scanf("%d", &ch);
@@ -960,7 +960,7 @@ int main()
                   }
 
                   break;
-            case 6:
+            case 6://* done
                   printf("enter 1 to print personal contact list and 2 to print profectional contact list: \n");
                   int choice8;
                   scanf("%d", &choice8);
@@ -978,7 +978,7 @@ int main()
                   }
 
                   break;
-            case 7:
+            case 7://* done
                   printf("enter 1 to print personal contact list and 2 to merge in profectional contact list: \n");
                   int choice9;
                   scanf("%d", &choice9);
@@ -1042,9 +1042,9 @@ int main()
                               scanf("%d", &office);
                               insertProfessionalContact(&listmerge, mobile, name, lname, type, email, company, office);
                         }
-                        // }
-                        // sortlinkedlistActoNumbers(&listmerge);
-                        // sortlinkedlistActoNumbers(&prohead);
+                        
+                         sortlinkedlistActoNumbersofpro(&listmerge);
+                         sortlinkedlistActoNumbersofpro(&prohead);
                         mergeprofectional(listmerge, prohead);
                   }
                   else
