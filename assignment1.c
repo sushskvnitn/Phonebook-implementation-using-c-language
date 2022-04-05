@@ -8,6 +8,7 @@ struct node
       char lname[100];
       char type[10];
       struct node *next;
+      int duration;
 };
 struct pronode
 {
@@ -19,6 +20,19 @@ struct pronode
       char office[100];
       char type[10];
       struct pronode *next;
+};
+struct phonebook
+{
+      char name[20];
+      int totaltime;
+      char address[20];
+      struct node *list;
+      struct phonebook *next;
+};
+struct phonebook_list
+{
+      struct phonebook *head;
+      struct phonebook *next;
 };
 
 void sortlinkedlistActoNames(struct node **head_ref)
@@ -275,7 +289,6 @@ void sortlinkedlistdecending(struct node **head_ref)
             }
       }
 }
-
 
 void removeduplicateswithNumbers(struct node **head_ref)
 {
@@ -687,7 +700,8 @@ void sortlinkedlistdecendingofpro(struct pronode **head_ref)
       }
 }
 
-void DeleteProfContact(struct pronode **head_ref,int key){
+void DeleteProfContact(struct pronode **head_ref, int key)
+{
       struct pronode *temp = *head_ref, *prev;
       if (temp != NULL && temp->mobile == key)
       {
@@ -709,6 +723,7 @@ void DeleteProfContact(struct pronode **head_ref,int key){
       free(temp);
       return;
 }
+
 void DeleteprofContactwithname(struct pronode **head_ref, char *name, char *lname)
 {
       struct pronode *temp = *head_ref, *prev;
@@ -732,10 +747,82 @@ void DeleteprofContactwithname(struct pronode **head_ref, char *name, char *lnam
       free(temp);
       return;
 }
+
+
+void insertphonebook(struct phonebook_list **head_ref)
+{
+      struct phonebook *temp = (struct phonebook *)malloc(sizeof(struct phonebook));
+      printf("Enter the name of the person\n");
+      scanf("%s", temp->name);
+      printf("Enter the address\n");
+      scanf("%s", temp->address);
+      printf("enter the number of the contact in list \n");
+      int n;
+      scanf("%d", &n);
+      int ttime = 0;
+      struct node *newnode = NULL;
+      int i = 0;
+      for (i = 0; i < n; i++)
+      {
+            printf("Enter the mobile number of the contact \n");
+            int mobile;
+            scanf("%d", &mobile);
+            printf("Enter the name of the contact \n");
+            char name[100] = "";
+            scanf("%s", name);
+            printf("Enter the last name of the contact \n");
+            char lname[100] = "";
+            scanf("%s", lname);
+            printf("Enter the type of the contact \n");
+            char type[10] = "";
+            scanf("%s", type);
+            printf("enter the duration of the call \n");
+            int duration;
+            scanf("%d", &duration);
+            ttime = ttime + duration;
+            insertContact(&newnode, mobile, name, lname, type);
+            printf("The contact is added successfully\n");
+      }
+      temp->totaltime = ttime;
+      temp->list = newnode;
+      printf("The total time duration is %d\n", ttime);
+      temp->next = NULL;
+      struct phonebook_list *new = (struct phonebook_list *)malloc(sizeof(struct phonebook_list));
+      new->head = temp;
+      new->head->next = NULL;
+      if (*head_ref == NULL)
+      {
+            *head_ref = new;
+      }
+      else
+      {
+            struct phonebook_list *current = *head_ref;
+            while (current->head->next != NULL)
+            {
+                  current = current->next;
+            }
+            current->head->next = new->head;
+      }
+      printf("The phonebook is added successfully \n");
+}
+void displayPhonebook(struct phonebook_list *head)
+{
+      struct phonebook *current = head->head;
+      printf("................................................................................................\n");
+      printf("Name \t\t\t\tTotal time \t\t\t\tAddress \n");
+      printf("................................................................................................\n");
+      while (current != NULL)
+      {
+            printf("%s \t\t\t\t%d \t\t\t\t%s\n", current->name, current->totaltime, current->address);
+            printf("\n");
+            current = current->next;
+      }
+}
 int main()
 {
       struct node *head = NULL;
       struct pronode *prohead = NULL;
+      struct phonebook_list *headlist = NULL;
       int flag = 0;
       while (flag == 0)
       {
@@ -1215,8 +1302,11 @@ int main()
 
                   break;
             case 9:
-
+            {
+                  insertphonebook(&headlist);
+                  displayPhonebook(headlist);
                   break;
+            }
             case 0:
                   printf("Exited");
                   flag = 1;
