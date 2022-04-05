@@ -513,7 +513,6 @@ struct pronode *mergeprofectional(struct pronode *h1, struct pronode *h2)
       return temp;
 }
 
-
 void removeduplicateswithnamesOfProNode(struct pronode **head_ref)
 {
       struct pronode *current = *head_ref, *index = NULL;
@@ -822,7 +821,7 @@ void displayPhonebook(struct phonebook_list *head)
             current = current->next;
       }
 }
-
+//commented as not working properly
 // void sortPhonebookList(struct phonebook_list **head_ref)
 // {
 //       struct phonebook_list *temp = *head_ref;
