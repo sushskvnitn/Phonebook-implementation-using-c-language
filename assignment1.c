@@ -1,3 +1,6 @@
+// Name : sushant sanjiv kogurwar
+// Roll_no : BT20CSE067
+// topic : A phonebook  implemented using linked list of data structures 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -32,8 +35,20 @@ struct phonebook
 struct phonebook_list
 {
       struct phonebook *head;
-      struct phonebook *next;
+      struct phonebook_list *next;
 };
+void displayContact(struct node *node)
+{
+      printf("\n\n...........................................................\n");
+      printf("name \tlast_name \tmobile number \t type \n");
+      printf("............................................................\n");
+      while (node != NULL)
+      {
+            printf("%s \t%s \t    %d \t %s \t\n", node->name, node->lname, node->mobile, node->type);
+            node = node->next;
+      }
+      printf("\n\n");
+}
 
 void sortlinkedlistActoNames(struct node **head_ref)
 {
@@ -95,22 +110,6 @@ void insertContact(struct node **head, int mob, char *na, char *lna, char *type)
       temp->next = newnode;
       sortlinkedlistActoNames(head);
       return;
-}
-
-void displayContact(struct node *node)
-{
-      printf("\n\n...........................................................\n");
-      printf("    NAME\t Lastname  \t MOBILE \t type\n");
-      printf("............................................................\n");
-      while (node != NULL)
-      {
-            printf(" %s \t", node->name);
-            printf(" %s \t", node->lname);
-            printf(" %d \t ", node->mobile);
-            printf(" %s \n", node->type);
-            node = node->next;
-      }
-      printf("\n\n");
 }
 
 void DeleteContact(struct node **head_ref, int key)
@@ -343,21 +342,24 @@ void removeduplicateswithNames(struct node **head_ref)
 
 struct node *merge(struct node *h1, struct node *h2)
 {
-      if (!h1)
-            return h2;
-      if (!h2)
-            return h1;
-
-      if (h1->mobile < h2->mobile)
-      {
-            h1->next = merge(h1->next, h2);
-            return h1;
+      if (!h1){
+      return h2;
+      }
+           
+      if (!h2){
+             return h1;
+      }
+      struct node *temp = NULL;
+      if (h1->mobile > h2->mobile)
+      {     temp=h2;
+            temp->next = merge(h2->next, h1);
       }
       else
-      {
-            h2->next = merge(h1, h2->next);
-            return h2;
+      {     temp=h1;
+            temp->next = merge(h1->next, h2);   
       }
+      sortlinkedlistActoNames(&temp);
+      return temp;
 }
 
 // TODO: PROFECTIONAL NODES AND LINKED LIST
@@ -489,24 +491,28 @@ void displayprofectional(struct pronode *prohead_ref)
       }
 }
 
-struct pronode *mergeprofectional(struct pronode *prohead_ref, struct pronode *prohead_ref1)
+struct pronode *mergeprofectional(struct pronode *h1, struct pronode *h2)
 {
-      if (!prohead_ref)
-            return NULL;
-      if (!prohead_ref1)
-            return NULL;
-
-      if (prohead_ref->mobile < prohead_ref1->mobile)
-      {
-            prohead_ref->next = mergeprofectional(prohead_ref->next, prohead_ref1);
-            return prohead_ref;
+      if (!h1){
+      return h2;
+      }
+           
+      if (!h2){
+             return h1;
+      }
+      struct pronode *temp = NULL;
+      if (h1->mobile > h2->mobile)
+      {     temp=h2;
+            temp->next = mergeprofectional(h2->next, h1);
       }
       else
-      {
-            prohead_ref1->next = mergeprofectional(prohead_ref, prohead_ref1->next);
-            return prohead_ref1;
+      {     temp=h1;
+            temp->next = mergeprofectional(h1->next, h2);   
       }
+      sortlinkedlistActoNamesofpro(&temp);
+      return temp;
 }
+
 
 void removeduplicateswithnamesOfProNode(struct pronode **head_ref)
 {
@@ -600,7 +606,7 @@ void sortlinkedlistActoNumbersofpro(struct pronode **pronode)
                   index = current->next;
                   while (index != NULL)
                   {
-                        if (current->number > index->number)
+                        if (current->mobile > index->mobile)
                         {
                               int mo = current->mobile;
                               char na[20];
@@ -748,7 +754,6 @@ void DeleteprofContactwithname(struct pronode **head_ref, char *name, char *lnam
       return;
 }
 
-
 void insertphonebook(struct phonebook_list **head_ref)
 {
       struct phonebook *temp = (struct phonebook *)malloc(sizeof(struct phonebook));
@@ -785,7 +790,6 @@ void insertphonebook(struct phonebook_list **head_ref)
       }
       temp->totaltime = ttime;
       temp->list = newnode;
-      printf("The total time duration is %d\n", ttime);
       temp->next = NULL;
       struct phonebook_list *new = (struct phonebook_list *)malloc(sizeof(struct phonebook_list));
       new->head = temp;
@@ -818,6 +822,45 @@ void displayPhonebook(struct phonebook_list *head)
             current = current->next;
       }
 }
+
+// void sortPhonebookList(struct phonebook_list **head_ref)
+// {
+//       struct phonebook_list *temp = *head_ref;
+//       struct phonebook *current = temp->head, *index = NULL;
+//       char tempo[20];
+//       if (temp == NULL)
+//       {
+//             return;
+//       }
+//       else
+//       {
+
+//             while (current != NULL)
+//             {
+//                   index = current->next;
+//                   while (index != NULL)
+//                   {
+//                         if (current->totaltime < index->totaltime)
+//                         {
+//                               strcpy(tempo, current->name);
+//                               strcpy(current->name, index->name);
+//                               strcpy(index->name, tempo);
+
+//                               strcpy(tempo, current->address);
+//                               strcpy(current->address, index->address);
+//                               strcpy(index->address, tempo);
+
+//                               int ttime = current->totaltime;
+//                               current->totaltime = index->totaltime;
+//                               index->totaltime = ttime;
+//                         }
+//                         temp = temp->next;
+//                   }
+//                   current = current->next;
+//             }
+//       }
+// }
+
 int main()
 {
       struct node *head = NULL;
@@ -895,7 +938,7 @@ int main()
                   {
 
                         printf("Enter the new  mobile number of the contact \n");
-                        int mobile1;
+                        int mobile1=0;
                         scanf("%d", &mobile1);
                         printf("Enter the new name of the contact \n");
                         char name1[100] = "";
@@ -908,7 +951,7 @@ int main()
                   else if (choice7 == 2)
                   {
                         printf("Enter the new  mobile number of the contact \n");
-                        int mobile1;
+                        int mobile1=0;
                         scanf("%d", &mobile);
                         printf("Enter the new name of the contact \n");
                         char name1[100] = "";
@@ -1113,10 +1156,12 @@ int main()
                               if (inp == 1)
                               {
                                     sortlinkedlistActoNumbers(&head);
+                                    printf("Invalid choice \n");
                               }
                               else if (inp == 2)
                               {
                                     sortlinkedlistdecending(&head);
+                                    printf("Invalid choice \n");
                               }
                               else
                               {
@@ -1126,6 +1171,7 @@ int main()
                         else
                         {
                               sortlinkedlistActoNames(&head);
+                              printf("Contact list sorted \n");
                         }
                   }
                   else if (ch == 2)
@@ -1183,7 +1229,7 @@ int main()
 
                   break;
             case 7: //* done
-                  printf("enter 1 to print personal contact list and 2 to merge in profectional contact list: \n");
+                  printf("enter 1 to merge personal contact list and 2 to merge in profectional contact list: \n");
                   int choice9;
                   scanf("%d", &choice9);
                   if (choice9 == 1)
@@ -1212,7 +1258,8 @@ int main()
                         }
                         sortlinkedlistActoNumbers(&listmerge);
                         sortlinkedlistActoNumbers(&head);
-                        merge(listmerge, head);
+                      head= merge(listmerge, head);
+                        printf(" merged list successfully \n");
                   }
                   else if (choice9 == 2)
                   {
@@ -1241,7 +1288,7 @@ int main()
                               printf("Enter the company of the contact \n");
                               char company[100] = "";
                               scanf("%s", company);
-                              printf("Enter the office of the contact \n");
+                              printf("Enter the office number  of the contact \n");
                               int office = 0;
                               scanf("%d", &office);
                               insertProfessionalContact(&listmerge, mobile, name, lname, type, email, company, office);
@@ -1249,7 +1296,8 @@ int main()
 
                         sortlinkedlistActoNumbersofpro(&listmerge);
                         sortlinkedlistActoNumbersofpro(&prohead);
-                        mergeprofectional(listmerge, prohead);
+                       prohead = mergeprofectional(listmerge, prohead);
+                        printf(" merged list successfully \n");
                   }
                   else
                   {
@@ -1258,7 +1306,7 @@ int main()
 
                   break;
             case 8: // * done
-                  printf("enter 1 to print personal contact list and 2 to remove duplicates profectional contact list: \n");
+                  printf("enter 1 to remove duplicates personal contact list and 2 to remove duplicates profectional contact list: \n");
                   int choice10;
                   scanf("%d", &choice10);
                   if (choice10 == 1)
