@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+// TODO: CASE 3 5 8 REMAINING 
 typedef struct nodetag
 {
       int mobile;
@@ -425,7 +425,7 @@ int main()
                         printf("Enter the mobile number: \n");
                         int mobile = 0;
                         scanf("%d", &mobile);
-                        // root = del(root, mobile);
+                        root = del(root, mobile);
                         printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
                   }
                   else if (choice3 == 2)
