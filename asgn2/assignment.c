@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// TODO: CASE 3 5 8 REMAINING 
+
+//! TODO : CASE 3 5 8 REMAINING 
+
 typedef struct nodetag
 {
       int mobile;
@@ -26,6 +28,260 @@ typedef struct node_tag
       struct node_tag *right;
       int height;
 } profectional;
+
+int getheightpersonal(personal *root);
+int getheightprofessional(profectional *root);
+int getbalancefactor(personal *root);
+int getbalancefactorprofectional(profectional *root);
+personal *newnode(int mobile, char *name, char *lastname, char *type);
+int max(int a, int b);
+profectional *pronode(int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno);
+personal *rightrotate(personal *y);
+personal *leftrotate(personal *x);
+profectional *rightrotatepro(profectional *y);
+profectional *leftrotatepro(profectional *x);
+personal *insert(personal *root, int mobile, char *name, char *lastname, char *type,FILE *fp1);
+profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno,FILE *pro);
+void inorder(personal *root);
+void inorderpro(profectional *root);
+personal *search(personal *root, int key);
+profectional *searchinprofectional(profectional *root, int key);
+void editcontact(personal *root, int key,FILE *fp1);
+void edit_professional_contact(profectional *rootpro, int key);
+void range(personal *root, int low, int high);
+void rangepro(profectional *root, int low, int high);
+void printdatainfiles(FILE *fptr);
+void printdatainfilesinprof(FILE *fptr);
+
+int main()
+{
+      personal *root = NULL;
+      profectional *rootpro = NULL;
+      FILE *fp1= NULL;
+      fp1 = fopen("personal.txt", "a+");
+      
+      fputs("!!!!!!!!!!!!!!!!!!!!personal phone contact list!!!!!!!!!!!!!!!!!!!!!!\n", fp1);
+      fputs("Mobile \t NAME \t Lastname \t type \n", fp1);
+       fclose(fp1);
+       fp1 = fopen("profectional.txt", "a+");
+       fputs("!!!!!!!!!!!!!!!!!!!!professional phone contact list!!!!!!!!!!!!!!!!!!\n", fp1);
+       fputs("Mobile \t NAME \t Lastname \t type \t email\t address \t office no\n", fp1);
+       fclose(fp1);
+  
+      int flag = 0;
+      while (flag != 1)
+      {
+            printf("Enter 1 for insertion of contact \n");
+            printf("Enter 2 for edit the contact \n");
+            printf("Enter 3 for deletion of contact \n");
+            printf("Enter 4 for search of contact \n");
+            printf("Enter 5 for sort the contacts \n");
+            printf("Enter 6 for display the contacts \n");
+            printf("Enter 7 for range search  \n");
+            printf("Enter 8 for sort the records \n");
+            printf("Enter 0 for exit \n");
+            int choice;
+            printf("Enter the choice: ");
+            scanf("%d", &choice);
+
+            switch (choice)
+            {
+            case 1://* done
+                  printf("enter 1 for insertion of personal contact  and enter 2 to insert profectional contact\n");
+                  int choice1;
+                  scanf("%d", &choice1);
+                  printf("Enter the mobile number: \n");
+                  int mobile = 0;
+                  scanf("%d", &mobile);
+                  printf("Enter the name: \n");
+                  char name[20] = {'\0'};
+                  scanf("%s", name);
+                  printf("Enter the lastname: \n");
+                  char lastname[20] = {'\0'};
+                  scanf("%s", lastname);
+                  printf("Enter the type: \n");
+                  char type[20] = {'\0'};
+                  scanf("%s", type);
+                  if (choice1 == 1)
+                  {
+                        root = insert(root, mobile, name, lastname, type,fp1);
+                  }
+                  else if (choice1 == 2)
+                  {
+                        printf("Enter the email: \n");
+                        char email[20];
+                        scanf("%s", email);
+                        printf("Enter the address: \n");
+                        char address[20];
+                        scanf("%s", address);
+                        printf("Enter the office number: \n");
+                        int officeno;
+                        scanf("%d", &officeno);
+                        rootpro = insertpro(rootpro, mobile, name, lastname, type, email, address, officeno, fp1);
+                  }
+                  else
+                  {
+                        printf("invalid choice\n");
+                  }
+                  break;
+            case 2://* done
+                  // edit the contact
+                  printf("enter 1 for edit the personal contact  and enter 2 to edit profectional contact\n");
+                  int choice2;
+                  scanf("%d", &choice2);
+                  printf("Enter the mobile number: \n");
+                  int mobile2 = 0;
+                  scanf("%d", &mobile2);
+                  if (choice2 == 1)
+                  {
+                       editcontact( root,mobile2,fp1);
+                  }
+                  else if (choice2 == 2)
+                  {
+                        edit_professional_contact(rootpro, mobile2);
+                  }else{
+                        printf("invalid choice\n");
+                  }
+                      
+                  break;
+            case 3:
+                  // delete the contact
+                  printf("enter 1 for deletion of personal contact  and enter 2 to delete profectional contact\n");
+                  int choice3;
+                  scanf("%d", &choice3);
+                  if (choice3 == 1)
+                  {
+                        printf("Enter the mobile number: \n");
+                        int mobile = 0;
+                        scanf("%d", &mobile);
+                        //  del(&root, mobile);
+                        printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
+                  }
+                  else if (choice3 == 2)
+                  {
+                        printf("Enter the mobile number: \n");
+                        int mobile = 0;
+                        scanf("%d", &mobile);
+                        // rootpro = delpro(rootpro, mobile);
+                         printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
+                  }
+                  else
+                  {
+                        printf("invalid choice\n");
+                  }
+                  break;
+            case 4://* done  search  the contact
+                 
+                  printf("Enter the 1 for searching in personal node and 2 for in profectional node \n");
+                  int choice4 = 0;
+                  scanf("%d", &choice4);
+                  printf("Enter the number to be searched in phonebook\n");
+                  int key = 0;
+                  scanf("%d", &key);
+
+                  if (choice4 == 1)
+                  {
+                        personal *n = search(root, key);
+                        if(root==NULL){
+                            printf("mobile number not found in phonebook\n\n");
+                            break;   
+                        }
+                        if (n->mobile == key)
+                        {
+                              printf("mobile number found in phonebook\n\n");
+                              printf("\n\nfound contact details:%d %s %s %s\n\n", n->mobile, n->name, n->lastname, n->type);
+                        }
+                  }
+                   else if(choice4 == 2)
+                  {
+                        profectional *n = searchinprofectional(rootpro, key);
+                        if(root==NULL){
+                            printf("mobile number not found in phonebook\n\n");
+                            break;   
+                        }
+                        if (n->mobile == key)
+                        {
+                              printf("mobile number found in phonebook\n\n");
+                              printf("\n\nfound contact details:%d %s %s %s %s %s %d\n\n", n->mobile, n->name, n->lastname, n->type, n->email, n->address, n->officeno);
+                        }    
+                  }else{
+                        printf("invalid choice \n\n");
+                  }
+                  break;
+            case 5:
+                  // sort  the contact
+                  break;
+            case 6:
+                  // display the contact
+                  printf("\nenter 1 for recently added personal contact and \n enter 2  for recently added profectional contact\n enter 3 for display complete personal contact list \n enter 4 for display all profectional contact\n");
+                  int choice6;
+                  scanf("%d", &choice6);
+                  if (choice6 == 1)
+                  {
+                        inorder(root);
+                        
+                  }
+                  else if (choice6 == 2)
+                  {
+                        inorderpro(rootpro);
+                        
+                  }else if (choice6 == 3){
+                        printdatainfiles(fp1);
+                  }else if (choice6 == 4){
+                        printdatainfilesinprof(fp1);
+                  }
+
+                  else
+                  {
+                        printf("invalid choice\n");
+                  }
+
+                  break;
+            case 7:
+            // range search
+                  printf("enter 1 for personal contact and enter 2 for profectional contact\n");
+                  int choice7;
+                  scanf("%d", &choice7);
+                  if (choice7 == 1)
+                  {
+                        printf("Enter the lower limit of contact: \n");
+                        int lower = 0;
+                        scanf("%d", &lower);
+                        printf("Enter the upper limit of contact: \n");
+                        int upper = 0;
+                        scanf("%d", &upper);
+                        printf("mobile \t name \t lastname \t type\n");
+                        range(root, lower, upper);
+
+                  }
+                  else if (choice7 == 2)
+                  {
+                        printf("Enter the lower limit of contact: \n");
+                        int lower = 0;
+                        scanf("%d", &lower);
+                        printf("Enter the upper limit of contact: \n");
+                        int upper = 0;
+                        scanf("%d", &upper);
+                        printf("mobile \t name \t lastname \t type \t email \t address \t office no\n");
+                        rangepro(rootpro, lower, upper);
+                  }
+                  else
+                  {
+                        printf("invalid choice\n");
+                  }
+                  break;
+            case 8:
+            // sort the records
+            case 0:
+                  flag = 1;
+                  
+                  break;
+            }
+            
+      }
+
+      return 0;
+}
 
 int getheightpersonal(personal *root)
 {
@@ -61,6 +317,7 @@ personal *newnode(int mobile, char *name, char *lastname, char *type)
       strcpy(n->name, name);
       strcpy(n->lastname, lastname);
       strcpy(n->type, type);
+      n->mobile = 0;
       n->mobile = mobile;
       n->left = NULL;
       n->right = NULL;
@@ -146,15 +403,21 @@ profectional *leftrotatepro(profectional *x)
       return y;
 }
 
-personal *insert(personal *root, double mobile, char *name, char *lastname, char *type)
+personal *insert(personal *root, int mobile, char *name, char *lastname, char *type,FILE *fp1)
 {
       // insert like bst
       if (root == NULL)
-            return newnode(mobile, name, lastname, type);
+      {     fopen("personal.txt","a+");
+            root = newnode(mobile, name, lastname, type);
+            fprintf(fp1, "%d\t%s\t%s\t%s\n", mobile, name, lastname, type);
+            fclose(fp1);
+            return root;
+      }
+        
       if (mobile < root->mobile)
-            root->left = insert(root->left, mobile, name, lastname, type);
+            root->left = insert(root->left, mobile, name, lastname, type,fp1);
       else if (mobile > root->mobile)
-            root->right = insert(root->right, mobile, name, lastname, type);
+            root->right = insert(root->right, mobile, name, lastname, type,fp1);
       else
             return root;
 
@@ -180,15 +443,23 @@ personal *insert(personal *root, double mobile, char *name, char *lastname, char
       return root;
 }
 
-profectional *insertpro(profectional *root, double mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno)
+profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno,FILE *pro)
 {
       // insert like bst
       if (root == NULL)
-            return pronode(mobile, name, lastname, type, email, address, officeno);
+      {    
+            fopen("profectional.txt","a+");
+            root = pronode(mobile, name, lastname, type, email, address, officeno);
+            fprintf(pro, "%d\t%s\t%s\t%s\t%s\t%s\t%d\n", mobile, name, lastname, type, email, address, officeno);
+            fclose(pro);
+            printf("new node created\n\n\n");
+            return root;
+      }
+           
       if (mobile < root->mobile)
-            root->left = insertpro(root->left, mobile, name, lastname, type, email, address, officeno);
+            root->left = insertpro(root->left, mobile, name, lastname, type, email, address, officeno,pro);
       else if (mobile > root->mobile)
-            root->right = insertpro(root->right, mobile, name, lastname, type, email, address, officeno);
+            root->right = insertpro(root->right, mobile, name, lastname, type, email, address, officeno,pro);
       else
             return root;
 
@@ -214,23 +485,73 @@ profectional *insertpro(profectional *root, double mobile, char *name, char *las
       return root;
 }
 
-void preorder(personal *root)
-{
+void inorder(personal *root)
+{     if(root==NULL) {
+      printf("no recent contacts in your contact list\n\n");
+      return;
+      }
       if (root != NULL)
-      {
+      {     inorder(root->left);
             printf("%d %s %s %s\n", root->mobile, root->name, root->lastname, root->type);
-            preorder(root->left);
-            preorder(root->right);
+            
+            inorder(root->right);
       }
 }
-void preorderpro(profectional *root)
-{
-      if (root != NULL)
-      {
-            printf("%d %s %s %s %s %s %d\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
-            preorderpro(root->left);
-            preorderpro(root->right);
+void inorderpro(profectional *root)
+{      if(root==NULL) {
+      printf("no recent contacts in your contact list\n\n");
+      return;
       }
+      if (root != NULL)
+      {     
+            inorderpro(root->left);
+            printf("%d %s %s %s %s %s %d\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
+            
+            inorderpro(root->right);
+      }
+}
+
+void printdatainfiles(FILE *fptr){
+      printf("\n");
+             fptr = fopen("personal.txt", "r");
+             char c;
+    if (fptr == NULL)
+    {
+        printf("Cannot open file \n");
+        exit(0);
+    }
+  
+    // Read contents from file
+    c = fgetc(fptr);
+    while (c != EOF)
+    {
+        printf ("%c", c);
+        c = fgetc(fptr);
+    }
+       printf("\n");
+    fclose(fptr);
+    return ;
+}
+void printdatainfilesinprof(FILE *fptr){
+            printf("\n");
+             fptr = fopen("profectional.txt", "r");
+             char c;
+    if (fptr == NULL)
+    {
+        printf("Cannot open file \n");
+        exit(0);
+    }
+  
+    // Read contents from file
+    c = fgetc(fptr);
+    while (c != EOF)
+    {
+        printf ("%c", c);
+        c = fgetc(fptr);
+    }
+   printf("\n");
+    fclose(fptr);
+    return;
 }
 
 personal *search(personal *root, int key)
@@ -266,7 +587,7 @@ profectional *searchinprofectional(profectional *root, int key)
       return searchinprofectional(root->right, key);
 }
 
-void editcontact(personal *root, int key)
+void editcontact(personal *root, int key,FILE *fp)
 {
       personal *temp = search(root, key);
       if (temp == NULL)
@@ -283,6 +604,9 @@ void editcontact(personal *root, int key)
 
       printf("\nEnter new type: ");
       scanf("%s", temp->type);
+      fopen("personal.txt", "a+");
+      fprintf(fp, "%d\t%s\t%s\t%s  (updated contact of mobile no %d ) \n", temp->mobile, temp->name, temp->lastname, temp->type,key);
+      fclose(fp);
       printf("\n\nupdated contact details\n\n");
 }
  void edit_professional_contact(profectional *root, int key){
@@ -333,213 +657,4 @@ void rangepro(profectional *root,int low,int high){
       }
       rangepro(root->left, low, high);
       rangepro(root->right, low, high); 
-}
-
-int main()
-{
-      personal *root = NULL;
-      profectional *rootpro = NULL;
-      int flag = 0;
-      while (flag != 1)
-      {
-            printf("Enter 1 for insertion of contact \n");
-            printf("Enter 2 for edit the contact \n");
-            printf("Enter 3 for deletion of contact \n");
-            printf("Enter 4 for search of contact \n");
-            printf("Enter 5 for sort the contacts \n");
-            printf("Enter 6 for display the contacts \n");
-            printf("Enter 7 for range search  \n");
-            printf("Enter 8 for sort the records \n");
-            printf("Enter 0 for exit \n");
-            int choice;
-            printf("Enter the choice: ");
-            scanf("%d", &choice);
-
-            switch (choice)
-            {
-            case 1://* done
-                  printf("enter 1 for insertion of personal contact  and enter 2 to insert profectional contact\n");
-                  int choice1;
-                  scanf("%d", &choice1);
-                  printf("Enter the mobile number: \n");
-                  int mobile = 0;
-                  scanf("%d", &mobile);
-                  printf("Enter the name: \n");
-                  char name[20] = {'\0'};
-                  scanf("%s", name);
-                  printf("Enter the lastname: \n");
-                  char lastname[20] = {'\0'};
-                  scanf("%s", lastname);
-                  printf("Enter the type: \n");
-                  char type[20] = {'\0'};
-                  scanf("%s", type);
-                  if (choice1 == 1)
-                  {
-                        root = insert(root, mobile, name, lastname, type);
-                  }
-                  else if (choice1 == 2)
-                  {
-                        printf("Enter the email: \n");
-                        char email[20];
-                        scanf("%s", email);
-                        printf("Enter the address: \n");
-                        char address[20];
-                        scanf("%s", address);
-                        printf("Enter the office number: \n");
-                        int officeno;
-                        scanf("%d", &officeno);
-                        rootpro = insertpro(rootpro, mobile, name, lastname, type, email, address, officeno);
-                  }
-                  else
-                  {
-                        printf("invalid choice\n");
-                  }
-                  break;
-            case 2://* done
-                  // edit the contact
-                  printf("enter 1 for edit the personal contact  and enter 2 to edit profectional contact\n");
-                  int choice2;
-                  scanf("%d", &choice2);
-                  printf("Enter the mobile number: \n");
-                  int mobile2 = 0;
-                  scanf("%d", &mobile2);
-                  if (choice2 == 1)
-                  {
-                       editcontact( root,mobile2);
-                  }
-                  else if (choice2 == 2)
-                  {
-                        edit_professional_contact(rootpro, mobile2);
-                  }else{
-                        printf("invalid choice\n");
-                  }
-                      
-                  break;
-            case 3:
-                  // delete the contact
-                  printf("enter 1 for deletion of personal contact  and enter 2 to delete profectional contact\n");
-                  int choice3;
-                  scanf("%d", &choice3);
-                  if (choice3 == 1)
-                  {
-                        printf("Enter the mobile number: \n");
-                        int mobile = 0;
-                        scanf("%d", &mobile);
-                        root = del(root, mobile);
-                        printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
-                  }
-                  else if (choice3 == 2)
-                  {
-                        printf("Enter the mobile number: \n");
-                        int mobile = 0;
-                        scanf("%d", &mobile);
-                        // rootpro = delpro(rootpro, mobile);
-                         printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
-                  }
-                  else
-                  {
-                        printf("invalid choice\n");
-                  }
-                  break;
-            case 4://* done  search  the contact
-                 
-                  printf("Enter the 1 for searching in personal node and 2 for in profectional node \n");
-                  int choice4 = 0;
-                  scanf("%d", &choice4);
-                  printf("Enter the number to be searched in phonebook\n");
-                  int key = 0;
-                  scanf("%d", &key);
-
-                  if (choice4 == 1)
-                  {
-                        personal *n = search(root, key);
-                        if(root==NULL){
-                            printf("mobile number not found in phonebook\n\n");
-                            break;   
-                        }
-                        if (n->mobile == key)
-                        {
-                              printf("mobile number found in phonebook\n\n");
-                              printf("\n\nfound contact details:%d %s %s %s\n\n", n->mobile, n->name, n->lastname, n->type);
-                        }
-                  }
-                   else if(choice4 == 2)
-                  {
-                        profectional *n = searchinprofectional(rootpro, key);
-                        if(root==NULL){
-                            printf("mobile number not found in phonebook\n\n");
-                            break;   
-                        }
-                        if (n->mobile == key)
-                        {
-                              printf("mobile number found in phonebook\n\n");
-                              printf("\n\nfound contact details:%d %s %s %s %s %s %d\n\n", n->mobile, n->name, n->lastname, n->type, n->email, n->address, n->officeno);
-                        }    
-                  }else{
-                        printf("invalid choice \n\n");
-                  }
-                  break;
-            case 5:
-                  // sort  the contact
-                  break;
-            case 6:
-                  // display the contact
-                  printf("enter 1 for personal contact and enter 2 for profectional contact\n");
-                  int choice6;
-                  scanf("%d", &choice6);
-                  if (choice6 == 1)
-                  {
-                        preorder(root);
-                  }
-                  else if (choice6 == 2)
-                  {
-                        preorderpro(rootpro);
-                  }
-                  else
-                  {
-                        printf("invalid choice\n");
-                  }
-
-                  break;
-            case 7:
-            // range search
-                  printf("enter 1 for personal contact and enter 2 for profectional contact\n");
-                  int choice7;
-                  scanf("%d", &choice7);
-                  if (choice7 == 1)
-                  {
-                        printf("Enter the lower limit of contact: \n");
-                        int lower = 0;
-                        scanf("%d", &lower);
-                        printf("Enter the upper limit of contact: \n");
-                        int upper = 0;
-                        scanf("%d", &upper);
-                        printf("mobile \t name \t lastname \t type\n");
-                        range(root, lower, upper);
-
-                  }
-                  else if (choice7 == 2)
-                  {
-                        printf("Enter the lower limit of contact: \n");
-                        int lower = 0;
-                        scanf("%d", &lower);
-                        printf("Enter the upper limit of contact: \n");
-                        int upper = 0;
-                        scanf("%d", &upper);
-                        printf("mobile \t name \t lastname \t type \t email \t address \t office no\n");
-                        rangepro(rootpro, lower, upper);
-                  }
-                  else
-                  {
-                        printf("invalid choice\n");
-                  }
-                  break;
-            case 8:
-            // sort the records
-            case 0:
-                  flag = 1;
-                  break;
-            }
-      }
-      return 0;
 }
