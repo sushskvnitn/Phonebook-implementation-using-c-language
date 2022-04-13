@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//! TODO : CASE 3 5 8 REMAINING 
+//! TODO : CASE 3(profectional) 5 8 REMAINING 
 
 typedef struct nodetag
 {
