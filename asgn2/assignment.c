@@ -28,7 +28,7 @@ typedef struct node_tag
       struct node_tag *right;
       int height;
 } profectional;
-
+personal * minValueNode(personal* node);
 int getheightpersonal(personal *root);
 int getheightprofessional(profectional *root);
 int getbalancefactor(personal *root);
@@ -52,7 +52,7 @@ void range(personal *root, int low, int high);
 void rangepro(profectional *root, int low, int high);
 void printdatainfiles(FILE *fptr);
 void printdatainfilesinprof(FILE *fptr);
-
+personal* deleteNode(personal* root, int key);
 int main()
 {
       personal *root = NULL;
@@ -154,7 +154,7 @@ int main()
                         printf("Enter the mobile number: \n");
                         int mobile = 0;
                         scanf("%d", &mobile);
-                        //  del(&root, mobile);
+                         deleteNode(root, mobile);
                         printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
                   }
                   else if (choice3 == 2)
@@ -218,11 +218,13 @@ int main()
                   scanf("%d", &choice6);
                   if (choice6 == 1)
                   {
+                        printf("Mobile \t NAME \t Lastname \t type \n");
                         inorder(root);
                         
                   }
                   else if (choice6 == 2)
                   {
+                        printf("Mobile \t NAME \t Lastname \t type \t email \t address \t office number \n");
                         inorderpro(rootpro);
                         
                   }else if (choice6 == 3){
@@ -486,10 +488,7 @@ profectional *insertpro(profectional *root, int mobile, char *name, char *lastna
 }
 
 void inorder(personal *root)
-{     if(root==NULL) {
-      printf("no recent contacts in your contact list\n\n");
-      return;
-      }
+{    
       if (root != NULL)
       {     inorder(root->left);
             printf("%d %s %s %s\n", root->mobile, root->name, root->lastname, root->type);
@@ -498,10 +497,8 @@ void inorder(personal *root)
       }
 }
 void inorderpro(profectional *root)
-{      if(root==NULL) {
-      printf("no recent contacts in your contact list\n\n");
-      return;
-      }
+{      
+      
       if (root != NULL)
       {     
             inorderpro(root->left);
@@ -657,4 +654,105 @@ void rangepro(profectional *root,int low,int high){
       }
       rangepro(root->left, low, high);
       rangepro(root->right, low, high); 
+}
+
+personal * minValueNode(personal* node)
+{
+    personal* current = node;
+ 
+    while (current->left != NULL)
+        current = current->left;
+ 
+    return current;
+}
+
+personal* deleteNode(personal* root, int key)
+{
+     
+    // STEP 1: PERFORM STANDARD BST DELETE
+    if (root == NULL)
+        return root;
+    if ( key < root->mobile )
+        root->left = deleteNode(root->left, key);
+    else if( key > root->mobile )
+        root->right = deleteNode(root->right, key);
+    else
+    {
+        if( (root->left == NULL) ||
+            (root->right == NULL) )
+        {
+            personal *temp = root->left ?
+                         root->left :
+                         root->right;
+ 
+            // No child case
+            if (temp == NULL)
+            {
+                temp = root;
+                root = NULL;
+            }
+            else // One child case
+            *root = *temp; // Copy the contents of
+                           // the non-empty child
+            free(temp);
+        }
+        else
+        {
+
+            personal* temp = minValueNode(root->right);
+ 
+            // Copy the inorder successor's
+            // data to this node
+            root->mobile = temp->mobile;
+ 
+            // Delete the inorder successor
+            root->right = deleteNode(root->right,
+                                     temp->mobile);
+        }
+    }
+ 
+    // If the tree had only one node
+    // then return
+    if (root == NULL)
+    return root;
+ 
+    // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
+    root->height = 1 + max(getheightpersonal(root->left),
+                           getheightpersonal(root->right));
+ 
+    // STEP 3: GET THE BALANCE FACTOR OF
+    // THIS NODE (to check whether this
+    // node became unbalanced)
+    int balance = getbalancefactor(root);
+ 
+    // If this node becomes unbalanced,
+    // then there are 4 cases
+ 
+    // Left Left Case
+    if (balance > 1 &&
+        getbalancefactor(root->left) >= 0)
+        return rightrotate(root);
+ 
+    // Left Right Case
+    if (balance > 1 &&
+        getbalancefactor(root->left) < 0)
+    {
+        root->left = leftrotate(root->left);
+        return rightrotate(root);
+    }
+ 
+    // Right Right Case
+    if (balance < -1 &&
+        getbalancefactor(root->right) <= 0)
+        return leftrotate(root);
+ 
+    // Right Left Case
+    if (balance < -1 &&
+        getbalancefactor(root->right) > 0)
+    {
+        root->right = rightrotate(root->right);
+        return leftrotate(root);
+    }
+ 
+    return root;
 }
