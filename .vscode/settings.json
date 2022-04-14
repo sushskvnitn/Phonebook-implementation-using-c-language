@@ -1,6 +1,7 @@
 {
       "C_Cpp.errorSquiggles": "Disabled",
       "files.associations": {
-            "BT20CSE067-A1.C": "cpp"
+            "BT20CSE067-A1.C": "cpp",
+            "xstring": "c"
       }
 }

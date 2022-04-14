@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-//! TODO : CASE 3(profectional) 5 8 REMAINING 
+#include<time.h>
+//! TODO : CASE 3(profectional) 5 8 REMAINING
 
 typedef struct nodetag
 {
@@ -28,7 +28,9 @@ typedef struct node_tag
       struct node_tag *right;
       int height;
 } profectional;
-personal * minValueNode(personal* node);
+
+profectional *minValueNodepro(profectional *node);
+personal *minValueNode(personal *node);
 int getheightpersonal(personal *root);
 int getheightprofessional(profectional *root);
 int getbalancefactor(personal *root);
@@ -40,34 +42,35 @@ personal *rightrotate(personal *y);
 personal *leftrotate(personal *x);
 profectional *rightrotatepro(profectional *y);
 profectional *leftrotatepro(profectional *x);
-personal *insert(personal *root, int mobile, char *name, char *lastname, char *type,FILE *fp1);
-profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno,FILE *pro);
+personal *insert(personal *root, int mobile, char *name, char *lastname, char *type, FILE *fp1);
+profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno, FILE *pro);
 void inorder(personal *root);
 void inorderpro(profectional *root);
 personal *search(personal *root, int key);
 profectional *searchinprofectional(profectional *root, int key);
-void editcontact(personal *root, int key,FILE *fp1);
+void editcontact(personal *root, int key, FILE *fp1);
 void edit_professional_contact(profectional *rootpro, int key);
 void range(personal *root, int low, int high);
 void rangepro(profectional *root, int low, int high);
 void printdatainfiles(FILE *fptr);
 void printdatainfilesinprof(FILE *fptr);
-personal* deleteNode(personal* root, int key);
+personal *deleteNode(personal *root, int key);
+
+profectional *deleteNodepro(profectional *root, int key);
+
 int main()
 {
       personal *root = NULL;
       profectional *rootpro = NULL;
-      FILE *fp1= NULL;
+      FILE *fp1 = NULL;
       fp1 = fopen("personal.txt", "a+");
-      
-      fputs("!!!!!!!!!!!!!!!!!!!!personal phone contact list!!!!!!!!!!!!!!!!!!!!!!\n", fp1);
-      fputs("Mobile \t NAME \t Lastname \t type \n", fp1);
-       fclose(fp1);
-       fp1 = fopen("profectional.txt", "a+");
-       fputs("!!!!!!!!!!!!!!!!!!!!professional phone contact list!!!!!!!!!!!!!!!!!!\n", fp1);
-       fputs("Mobile \t NAME \t Lastname \t type \t email\t address \t office no\n", fp1);
-       fclose(fp1);
-  
+      time_t t;   
+      time(&t);
+      fprintf(fp1,"personal phone contact list--->>Date : %s ",ctime(&t));
+      fclose(fp1);
+      fp1 = fopen("profectional.txt", "a+");
+     fprintf(fp1,"professional phone contact list--->>Date : %s ",ctime(&t));
+      fclose(fp1);
       int flag = 0;
       while (flag != 1)
       {
@@ -86,7 +89,7 @@ int main()
 
             switch (choice)
             {
-            case 1://* done
+            case 1: //* done
                   printf("enter 1 for insertion of personal contact  and enter 2 to insert profectional contact\n");
                   int choice1;
                   scanf("%d", &choice1);
@@ -104,7 +107,7 @@ int main()
                   scanf("%s", type);
                   if (choice1 == 1)
                   {
-                        root = insert(root, mobile, name, lastname, type,fp1);
+                        root = insert(root, mobile, name, lastname, type, fp1);
                   }
                   else if (choice1 == 2)
                   {
@@ -124,7 +127,7 @@ int main()
                         printf("invalid choice\n");
                   }
                   break;
-            case 2://* done
+            case 2: //* done
                   // edit the contact
                   printf("enter 1 for edit the personal contact  and enter 2 to edit profectional contact\n");
                   int choice2;
@@ -134,17 +137,19 @@ int main()
                   scanf("%d", &mobile2);
                   if (choice2 == 1)
                   {
-                       editcontact( root,mobile2,fp1);
+                        editcontact(root, mobile2, fp1);
                   }
                   else if (choice2 == 2)
                   {
                         edit_professional_contact(rootpro, mobile2);
-                  }else{
+                  }
+                  else
+                  {
                         printf("invalid choice\n");
                   }
-                      
+
                   break;
-            case 3:
+            case 3: //* done
                   // delete the contact
                   printf("enter 1 for deletion of personal contact  and enter 2 to delete profectional contact\n");
                   int choice3;
@@ -154,24 +159,22 @@ int main()
                         printf("Enter the mobile number: \n");
                         int mobile = 0;
                         scanf("%d", &mobile);
-                         deleteNode(root, mobile);
-                        printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
+                        root = deleteNode(root, mobile);
                   }
                   else if (choice3 == 2)
                   {
                         printf("Enter the mobile number: \n");
                         int mobile = 0;
                         scanf("%d", &mobile);
-                        // rootpro = delpro(rootpro, mobile);
-                         printf("\ndeleted contact with number %d and name %s  \n", mobile, name);
+                        rootpro = deleteNodepro(rootpro, mobile);
                   }
                   else
                   {
                         printf("invalid choice\n");
                   }
                   break;
-            case 4://* done  search  the contact
-                 
+            case 4: //* done  search  the contact
+
                   printf("Enter the 1 for searching in personal node and 2 for in profectional node \n");
                   int choice4 = 0;
                   scanf("%d", &choice4);
@@ -182,9 +185,10 @@ int main()
                   if (choice4 == 1)
                   {
                         personal *n = search(root, key);
-                        if(root==NULL){
-                            printf("mobile number not found in phonebook\n\n");
-                            break;   
+                        if (n == NULL)
+                        {
+                              printf("mobile number not found in phonebook\n\n");
+                              break;
                         }
                         if (n->mobile == key)
                         {
@@ -192,44 +196,55 @@ int main()
                               printf("\n\nfound contact details:%d %s %s %s\n\n", n->mobile, n->name, n->lastname, n->type);
                         }
                   }
-                   else if(choice4 == 2)
+                  else if (choice4 == 2)
                   {
                         profectional *n = searchinprofectional(rootpro, key);
-                        if(root==NULL){
-                            printf("mobile number not found in phonebook\n\n");
-                            break;   
+                        if (n == NULL)
+                        {
+                              printf("mobile number not found in phonebook\n\n");
+                              break;
                         }
                         if (n->mobile == key)
                         {
                               printf("mobile number found in phonebook\n\n");
                               printf("\n\nfound contact details:%d %s %s %s %s %s %d\n\n", n->mobile, n->name, n->lastname, n->type, n->email, n->address, n->officeno);
-                        }    
-                  }else{
+                        }
+                  }
+                  else
+                  {
                         printf("invalid choice \n\n");
                   }
                   break;
             case 5:
                   // sort  the contact
                   break;
-            case 6:
+            case 6://* done
                   // display the contact
                   printf("\nenter 1 for recently added personal contact and \n enter 2  for recently added profectional contact\n enter 3 for display complete personal contact list \n enter 4 for display all profectional contact\n");
                   int choice6;
                   scanf("%d", &choice6);
                   if (choice6 == 1)
                   {
+                        printf("\n\n");
                         printf("Mobile \t NAME \t Lastname \t type \n");
                         inorder(root);
-                        
+                        printf("\n\n");
                   }
                   else if (choice6 == 2)
                   {
+                        printf("\n\n");
                         printf("Mobile \t NAME \t Lastname \t type \t email \t address \t office number \n");
                         inorderpro(rootpro);
-                        
-                  }else if (choice6 == 3){
+                        printf("\n\n");
+                  }
+                  else if (choice6 == 3)
+                  {
+                        printf("Mobile \t NAME \t Lastname \t type \n");
                         printdatainfiles(fp1);
-                  }else if (choice6 == 4){
+                  }
+                  else if (choice6 == 4)
+                  {
+                        printf("Mobile \t NAME \t Lastname \t type \t email\t address \t office no\n");
                         printdatainfilesinprof(fp1);
                   }
 
@@ -240,7 +255,7 @@ int main()
 
                   break;
             case 7:
-            // range search
+                  // range search
                   printf("enter 1 for personal contact and enter 2 for profectional contact\n");
                   int choice7;
                   scanf("%d", &choice7);
@@ -254,7 +269,6 @@ int main()
                         scanf("%d", &upper);
                         printf("mobile \t name \t lastname \t type\n");
                         range(root, lower, upper);
-
                   }
                   else if (choice7 == 2)
                   {
@@ -273,13 +287,13 @@ int main()
                   }
                   break;
             case 8:
-            // sort the records
+                  // sort the records
+
             case 0:
                   flag = 1;
-                  
+
                   break;
             }
-            
       }
 
       return 0;
@@ -405,21 +419,22 @@ profectional *leftrotatepro(profectional *x)
       return y;
 }
 
-personal *insert(personal *root, int mobile, char *name, char *lastname, char *type,FILE *fp1)
+personal *insert(personal *root, int mobile, char *name, char *lastname, char *type, FILE *fp1)
 {
       // insert like bst
       if (root == NULL)
-      {     fopen("personal.txt","a+");
+      {
+            fopen("personal.txt", "a+");
             root = newnode(mobile, name, lastname, type);
             fprintf(fp1, "%d\t%s\t%s\t%s\n", mobile, name, lastname, type);
             fclose(fp1);
             return root;
       }
-        
+
       if (mobile < root->mobile)
-            root->left = insert(root->left, mobile, name, lastname, type,fp1);
+            root->left = insert(root->left, mobile, name, lastname, type, fp1);
       else if (mobile > root->mobile)
-            root->right = insert(root->right, mobile, name, lastname, type,fp1);
+            root->right = insert(root->right, mobile, name, lastname, type, fp1);
       else
             return root;
 
@@ -445,23 +460,23 @@ personal *insert(personal *root, int mobile, char *name, char *lastname, char *t
       return root;
 }
 
-profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno,FILE *pro)
+profectional *insertpro(profectional *root, int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno, FILE *pro)
 {
       // insert like bst
       if (root == NULL)
-      {    
-            fopen("profectional.txt","a+");
+      {
+            fopen("profectional.txt", "a+");
             root = pronode(mobile, name, lastname, type, email, address, officeno);
             fprintf(pro, "%d\t%s\t%s\t%s\t%s\t%s\t%d\n", mobile, name, lastname, type, email, address, officeno);
             fclose(pro);
             printf("new node created\n\n\n");
             return root;
       }
-           
+
       if (mobile < root->mobile)
-            root->left = insertpro(root->left, mobile, name, lastname, type, email, address, officeno,pro);
+            root->left = insertpro(root->left, mobile, name, lastname, type, email, address, officeno, pro);
       else if (mobile > root->mobile)
-            root->right = insertpro(root->right, mobile, name, lastname, type, email, address, officeno,pro);
+            root->right = insertpro(root->right, mobile, name, lastname, type, email, address, officeno, pro);
       else
             return root;
 
@@ -488,80 +503,84 @@ profectional *insertpro(profectional *root, int mobile, char *name, char *lastna
 }
 
 void inorder(personal *root)
-{    
+{
       if (root != NULL)
-      {     inorder(root->left);
+      {
+            inorder(root->left);
             printf("%d %s %s %s\n", root->mobile, root->name, root->lastname, root->type);
-            
+
             inorder(root->right);
       }
 }
 void inorderpro(profectional *root)
-{      
-      
+{
+
       if (root != NULL)
-      {     
+      {
             inorderpro(root->left);
             printf("%d %s %s %s %s %s %d\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
-            
+
             inorderpro(root->right);
       }
 }
 
-void printdatainfiles(FILE *fptr){
+void printdatainfiles(FILE *fptr)
+{
       printf("\n");
-             fptr = fopen("personal.txt", "r");
-             char c;
-    if (fptr == NULL)
-    {
-        printf("Cannot open file \n");
-        exit(0);
-    }
-  
-    // Read contents from file
-    c = fgetc(fptr);
-    while (c != EOF)
-    {
-        printf ("%c", c);
-        c = fgetc(fptr);
-    }
-       printf("\n");
-    fclose(fptr);
-    return ;
+      fptr = fopen("personal.txt", "r");
+      char c;
+      if (fptr == NULL)
+      {
+            printf("Cannot open file \n");
+            exit(0);
+      }
+
+      // Read contents from file
+      c = fgetc(fptr);
+      while (c != EOF)
+      {
+            printf("%c", c);
+            c = fgetc(fptr);
+      }
+      printf("\n");
+      fclose(fptr);
+      return;
 }
-void printdatainfilesinprof(FILE *fptr){
-            printf("\n");
-             fptr = fopen("profectional.txt", "r");
-             char c;
-    if (fptr == NULL)
-    {
-        printf("Cannot open file \n");
-        exit(0);
-    }
-  
-    // Read contents from file
-    c = fgetc(fptr);
-    while (c != EOF)
-    {
-        printf ("%c", c);
-        c = fgetc(fptr);
-    }
-   printf("\n");
-    fclose(fptr);
-    return;
+void printdatainfilesinprof(FILE *fptr)
+{
+      printf("\n");
+      fptr = fopen("profectional.txt", "r");
+      char c;
+      if (fptr == NULL)
+      {
+            printf("Cannot open file \n");
+            exit(0);
+      }
+
+      // Read contents from file
+      c = fgetc(fptr);
+      while (c != EOF)
+      {
+            printf("%c", c);
+            c = fgetc(fptr);
+      }
+      printf("\n");
+      fclose(fptr);
+      return;
 }
 
 personal *search(personal *root, int key)
 {
-      if (root == NULL)
+     if (root == NULL)
       {
+            
             return NULL;
       }
       if (root->mobile == key)
       {
             return root;
       }
-      if ( root->mobile >key)
+      if (root->mobile > key)
       {
             return search(root->left, key);
       }
@@ -577,14 +596,14 @@ profectional *searchinprofectional(profectional *root, int key)
       {
             return root;
       }
-      if ( root->mobile >key)
+      if (root->mobile > key)
       {
             return searchinprofectional(root->left, key);
       }
       return searchinprofectional(root->right, key);
 }
 
-void editcontact(personal *root, int key,FILE *fp)
+void editcontact(personal *root, int key, FILE *fp)
 {
       personal *temp = search(root, key);
       if (temp == NULL)
@@ -602,11 +621,12 @@ void editcontact(personal *root, int key,FILE *fp)
       printf("\nEnter new type: ");
       scanf("%s", temp->type);
       fopen("personal.txt", "a+");
-      fprintf(fp, "%d\t%s\t%s\t%s  (updated contact of mobile no %d ) \n", temp->mobile, temp->name, temp->lastname, temp->type,key);
+      fprintf(fp, "%d\t%s\t%s\t%s  (updated contact of mobile no %d ) \n", temp->mobile, temp->name, temp->lastname, temp->type, key);
       fclose(fp);
       printf("\n\nupdated contact details\n\n");
 }
- void edit_professional_contact(profectional *root, int key){
+void edit_professional_contact(profectional *root, int key)
+{
       profectional *temp = searchinprofectional(root, key);
       if (temp == NULL)
       {
@@ -626,8 +646,7 @@ void editcontact(personal *root, int key,FILE *fp)
       printf("\nEnter new office no: ");
       scanf("%d", &temp->officeno);
       printf("\n\nupdated contact details\n\n");
- }
-
+}
 
 void range(personal *root, int low, int high)
 {
@@ -637,122 +656,155 @@ void range(personal *root, int low, int high)
       }
       if (root->mobile >= low && root->mobile <= high)
       {
-            
+
             printf("%d \t %s \t %s \t %s\n", root->mobile, root->name, root->lastname, root->type);
       }
       range(root->left, low, high);
       range(root->right, low, high);
 }
-void rangepro(profectional *root,int low,int high){
+void rangepro(profectional *root, int low, int high)
+{
       if (root == NULL)
       {
             return;
       }
       if (root->mobile >= low && root->mobile <= high)
-      {     
+      {
             printf("%d \t %s \t %s \t %s \t %s \t %s \t %d\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
       }
       rangepro(root->left, low, high);
-      rangepro(root->right, low, high); 
+      rangepro(root->right, low, high);
 }
 
-personal * minValueNode(personal* node)
+personal *minValueNode(personal *node)
 {
-    personal* current = node;
- 
-    while (current->left != NULL)
-        current = current->left;
- 
-    return current;
+      personal *current = node;
+      while (current->left != NULL)
+            current = current->left;
+      return current;
 }
 
-personal* deleteNode(personal* root, int key)
+personal *deleteNode(personal *root, int key)
 {
-     
-    // STEP 1: PERFORM STANDARD BST DELETE
-    if (root == NULL)
-        return root;
-    if ( key < root->mobile )
-        root->left = deleteNode(root->left, key);
-    else if( key > root->mobile )
-        root->right = deleteNode(root->right, key);
-    else
-    {
-        if( (root->left == NULL) ||
-            (root->right == NULL) )
-        {
-            personal *temp = root->left ?
-                         root->left :
-                         root->right;
- 
-            // No child case
-            if (temp == NULL)
+      if (root == NULL)
+      {
+            return root;
+      }
+      else if (key < root->mobile)
+      {
+            root->left = deleteNode(root->left, key);
+      }
+      else if (key > root->mobile)
+            root->right = deleteNode(root->right, key);
+      else
+      {
+            if (root->left == NULL)
             {
-                temp = root;
-                root = NULL;
-            }
-            else // One child case
-            *root = *temp; // Copy the contents of
-                           // the non-empty child
-            free(temp);
-        }
-        else
-        {
+                  personal *temp = root->right;
 
-            personal* temp = minValueNode(root->right);
- 
-            // Copy the inorder successor's
-            // data to this node
-            root->mobile = temp->mobile;
- 
-            // Delete the inorder successor
-            root->right = deleteNode(root->right,
-                                     temp->mobile);
-        }
-    }
- 
-    // If the tree had only one node
-    // then return
-    if (root == NULL)
-    return root;
- 
-    // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
-    root->height = 1 + max(getheightpersonal(root->left),
-                           getheightpersonal(root->right));
- 
-    // STEP 3: GET THE BALANCE FACTOR OF
-    // THIS NODE (to check whether this
-    // node became unbalanced)
-    int balance = getbalancefactor(root);
- 
-    // If this node becomes unbalanced,
-    // then there are 4 cases
- 
-    // Left Left Case
-    if (balance > 1 &&
-        getbalancefactor(root->left) >= 0)
-        return rightrotate(root);
- 
-    // Left Right Case
-    if (balance > 1 &&
-        getbalancefactor(root->left) < 0)
-    {
-        root->left = leftrotate(root->left);
-        return rightrotate(root);
-    }
- 
-    // Right Right Case
-    if (balance < -1 &&
-        getbalancefactor(root->right) <= 0)
-        return leftrotate(root);
- 
-    // Right Left Case
-    if (balance < -1 &&
-        getbalancefactor(root->right) > 0)
-    {
-        root->right = rightrotate(root->right);
-        return leftrotate(root);
-    }
- 
-    return root;
+                  root->name[0] = '\0';
+                  root->lastname[0] = '\0';
+                  root->type[0] = '\0';
+                  free(root);
+                  root->mobile = 0;
+                  return temp;
+            }
+            else if (root->right == NULL)
+            {
+                  personal *temp = root->left;
+                  root->name[0] = '\0';
+                  root->lastname[0] = '\0';
+                  root->type[0] = '\0';
+                  free(root);
+                  root->mobile = 0;
+                  return temp;
+            }
+            else
+            {
+                  personal *temp = minValueNode(root->right);
+                  root->mobile = temp->mobile;
+                  root->right = deleteNode(root->right, temp->mobile);
+            }
+      }
+
+      if (root == NULL)
+      {
+            return root;
+      }
+
+      root->height = 1 + max(getheightpersonal(root->left), getheightpersonal(root->right));
+
+      int balance = getbalancefactor(root);
+      if (balance == 2 && getbalancefactor(root->left) >= 0)
+            return rightrotate(root);
+      else if (balance == 2 && getbalancefactor(root->left) == -1)
+      {
+            root->left = leftrotate(root->left);
+            return rightrotate(root);
+      }
+      else if (balance == -2 && getbalancefactor(root->right) <= 0)
+            return leftrotate(root);
+      else if (balance == -2 && getbalancefactor(root->right) == 1)
+      {
+            root->right = rightrotate(root->right);
+            return leftrotate(root);
+      }
+      return root;
+}
+profectional *minValueNodepro(profectional *node)
+{
+      profectional *current = node;
+      while (current->left != NULL)
+            current = current->left;
+      return current;
+}
+
+profectional *deleteNodepro(profectional *root, int key)
+{
+      if (root == NULL)
+            return root;
+      if (key < root->mobile)
+            root->left = deleteNodepro(root->left, key);
+      else if (key > root->mobile)
+            root->right = deleteNodepro(root->right, key);
+      else
+      {
+            if ((root->left == NULL) || (root->right == NULL))
+            {
+                  profectional *temp = root->left ? root->left : root->right;
+                  if (temp == NULL)
+                  {
+                        temp = root;
+                        root = NULL;
+                  }
+                  else
+                        *root = *temp;
+                  free(temp);
+            }
+            else
+            {
+                  profectional *temp = minValueNodepro(root->right);
+                  root->mobile = temp->mobile;
+                  root->right = deleteNodepro(root->right, temp->mobile);
+            }
+      }
+      if (root == NULL)
+            return root;
+      root->height = 1 + max(getheightprofectional(root->left), getheightprofectional(root->right));
+      int balance = getbalancefactorprofectional(root);
+      if (balance > 1 && getbalancefactorprofectional(root->left) >= 0)
+            return rightrotatepro(root);
+      if (balance > 1 && getbalancefactorprofectional(root->left) < 0)
+      {
+            root->left = leftrotatepro(root->left);
+            return rightrotatepro(root);
+      }
+      if (balance < -1 && getbalancefactorprofectional(root->right) <= 0)
+            return leftrotatepro(root);
+      if (balance < -1 && getbalancefactorprofectional(root->right) > 0)
+      {
+            root->right = rightrotatepro(root->right);
+            return leftrotatepro(root);
+      }
+      return root;
 }
