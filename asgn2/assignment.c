@@ -38,8 +38,7 @@ int getbalancefactorprofessional(professional *root);
 personal *newnode(int mobile, char *name, char *lastname, char *type);
 int max(int a, int b);
 professional *pronode(int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno);
-personal *rightrotate(personal *y);
-personal *leftrotate(personal *x);
+
 professional *rightrotatepro(professional *y);
 professional *leftrotatepro(professional *x);
 personal *insert(personal *root, int mobile, char *name, char *lastname, char *type, FILE *fp1);
@@ -55,16 +54,23 @@ void rangepro(professional *root, int low, int high);
 void printdatainfiles(FILE *fptr);
 void printdatainfilesinprof(FILE *fptr);
 personal *deleteNode(personal *root, int key);
-
 professional *deleteNodepro(professional *root, int key);
-
 void decendingsorted(personal *root);
 void decendingsortedpro(professional *root);
+
+personal *insert_phone_name(personal *new, char *fn, char *ln, int phn, char *type);
+personal * LR(personal* T);
+personal * RL(personal* T);
+personal * rotateleftt(personal* x);
+personal * rotaterightt(personal* x);
+
+
 
 int main()
 {
       personal *root = NULL;
       professional *rootpro = NULL;
+      personal *newroot = NULL;
       FILE *fp1 = NULL;
       fp1 = fopen("personal.txt", "a+");
       time_t t;
@@ -72,7 +78,7 @@ int main()
       fprintf(fp1, "personal phone contact list--->>Date : %s ", ctime(&t));
       fclose(fp1);
       fp1 = fopen("professional.txt", "a+");
-      fprintf(fp1, "professional phone contact list--->>Date : %s ", ctime(&t));
+      fprintf(fp1, "professional phone contact list--->>Date : %s  ", ctime(&t));
       fclose(fp1);
       int flag = 0;
       while (flag != 1)
@@ -111,6 +117,7 @@ int main()
                   if (choice1 == 1)
                   {
                         root = insert(root, mobile, name, lastname, type, fp1);
+                        newroot = insert_phone_name(newroot, name, lastname, mobile, type);
                   }
                   else if (choice1 == 2)
                   {
@@ -229,12 +236,12 @@ int main()
                         int choice6 = 0;
                         scanf("%d", &choice6);
                         if (choice6 == 1)
-                        {     
+                        {
                               printf("Mobile \t NAME \t Lastname \t type \n");
                               inorder(root);
                         }
                         else if (choice6 == 2)
-                        {     
+                        {
                               printf("Mobile \t NAME \t Lastname \t type \n");
                               decendingsorted(root);
                         }
@@ -334,28 +341,31 @@ int main()
                         printf("invalid choice\n");
                   }
                   break;
-            case 8:
-                  // sort the records with names 
+            case 8: // sort the records with names
                   printf("enter 1 for sorting in personal node and 2 for in professional node \n");
                   int choice8 = 0;
                   scanf("%d", &choice8);
                   if (choice8 == 1)
                   {
-                        
+                        inorder(newroot);
                   }
                   else if (choice8 == 2)
                   {
-                   
                   }
                   else
                   {
                         printf("invalid choice \n\n");
                   }
-
+                  break;
             case 0:
+            {
                   flag = 1;
                   printf("program terminated\n");
 
+                  break;
+            }
+            default:
+                  printf("\ninvalid choice\n");
                   break;
             }
       }
@@ -402,7 +412,6 @@ personal *newnode(int mobile, char *name, char *lastname, char *type)
       n->left = NULL;
       n->right = NULL;
       n->height = 1;
-      printf("new node created\n\n\n");
       return n;
 }
 
@@ -426,64 +435,7 @@ professional *pronode(int mobile, char *name, char *lastname, char *type, char *
       n->height = 1;
       return n;
 }
-/* right rotate  after right rotation the root will be the left child of the right child of the root
-           x
-         /   \
-       t1     y
-             /  \
-           t2    t3
 
-
-*/
-personal *rightrotate(personal *y)
-{
-      personal *x = y->left;
-      personal *t2 = x->right;
-      x->right = y;
-      y->left = t2;
-
-      y->height = max(getheightpersonal(y->left), getheightpersonal(y->right)) + 1;
-      x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
-      return x;
-}
-professional *rightrotatepro(professional *y)
-{
-      professional *x = y->left;
-      professional *t2 = x->right;
-      x->right = y;
-      y->left = t2;
-      y->height = max(getheightprofessional(y->left), getheightprofessional(y->right)) + 1;
-      x->height = max(getheightprofessional(x->left), getheightprofessional(x->right)) + 1;
-      return x;
-}
-/* left rotate
-           y
-         /   \
-       x     t3
-     /  \
-   t1    t2
-*/
-personal *leftrotate(personal *x)
-{
-      personal *y = x->right;
-      personal *t2 = y->left;
-      y->left = x;
-      x->right = t2;
-      y->height = max(getheightpersonal(y->left), getheightpersonal(y->right)) + 1;
-      x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
-      return y;
-}
-
-professional *leftrotatepro(professional *x)
-{
-      professional *y = x->right;
-      professional *t2 = y->left;
-      y->left = x;
-      x->right = t2;
-      y->height = max(getheightprofessional(y->left), getheightprofessional(y->right)) + 1;
-      x->height = max(getheightprofessional(x->left), getheightprofessional(x->right)) + 1;
-      return y;
-}
 
 personal *insert(personal *root, int mobile, char *name, char *lastname, char *type, FILE *fp1)
 {
@@ -509,18 +461,18 @@ personal *insert(personal *root, int mobile, char *name, char *lastname, char *t
       int balance = getbalancefactor(root);
       // left left case
       if (balance > 1 && mobile < root->left->mobile)
-            return rightrotate(root);
+            return rotaterightt(root);
       if (balance < -1 && mobile > root->right->mobile)
-            return leftrotate(root);
+            return rotateleftt(root);
       if (balance > 1 && mobile > root->left->mobile)
       {
-            root->left = leftrotate(root->left);
-            return rightrotate(root);
+            root->left = rotateleftt(root->left);
+            return rotaterightt(root);
       }
       if (balance < -1 && mobile < root->right->mobile)
       {
-            root->right = rightrotate(root->right);
-            return leftrotate(root);
+            root->right = rotaterightt(root->right);
+            return rotateleftt(root);
       }
 
       return root;
@@ -802,18 +754,18 @@ personal *deleteNode(personal *root, int key)
 
       int balance = getbalancefactor(root);
       if (balance == 2 && getbalancefactor(root->left) >= 0)
-            return rightrotate(root);
+            return rotaterightt(root);
       else if (balance == 2 && getbalancefactor(root->left) == -1)
       {
-            root->left = leftrotate(root->left);
-            return rightrotate(root);
+            root->left = rotateleftt(root->left);
+            return rotaterightt(root);
       }
       else if (balance == -2 && getbalancefactor(root->right) <= 0)
-            return leftrotate(root);
+            return rotateleftt(root);
       else if (balance == -2 && getbalancefactor(root->right) == 1)
       {
-            root->right = rightrotate(root->right);
-            return leftrotate(root);
+            root->right = rotaterightt(root->right);
+            return rotateleftt(root);
       }
       return root;
 }
@@ -824,6 +776,85 @@ professional *minValueNodepro(professional *node)
             current = current->left;
       return current;
 }
+
+
+/* right rotate  after right rotation the root will be the left child of the right child of the root
+           x
+         /   \
+       t1     y
+             /  \
+           t2    t3
+
+
+*/
+
+professional *rightrotatepro(professional *y)
+{
+      professional *x = y->left;
+      professional *t2 = x->right;
+      x->right = y;
+      y->left = t2;
+      y->height = max(getheightprofessional(y->left), getheightprofessional(y->right)) + 1;
+      x->height = max(getheightprofessional(x->left), getheightprofessional(x->right)) + 1;
+      return x;
+}
+/* left rotate
+           y
+         /   \
+       x     t3
+     /  \
+   t1    t2
+*/
+
+
+professional *leftrotatepro(professional *x)
+{
+      professional *y = x->right;
+      professional *t2 = y->left;
+      y->left = x;
+      x->right = t2;
+      y->height = max(getheightprofessional(y->left), getheightprofessional(y->right)) + 1;
+      x->height = max(getheightprofessional(x->left), getheightprofessional(x->right)) + 1;
+      return y;
+}
+
+personal * rotaterightt(personal* x)
+{
+	personal *y ;
+	y=x->left;
+	x->left=y->right;
+	y->right=x;
+	 x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
+      y->height = max(getheightpersonal(y->left), getheightpersonal(y->right)) + 1;
+	return y;
+}
+
+personal * rotateleftt(personal* x)
+{
+	personal *y ;
+	y=x->right;
+	x->right=y->left;
+	y->left=x;
+ x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
+      y->height = max(getheightpersonal(y->left), getheightpersonal(y->right)) + 1;
+	return y;
+}
+
+
+personal * LR(personal* T)
+{
+		T->left=rotateleftt(T->left);
+		T=rotaterightt(T);
+		return T;
+}
+
+personal * RL(personal* T)
+{
+		T->right=rotaterightt(T->right);
+		T=rotateleftt(T);
+		return T;
+}
+
 
 professional *deleteNodepro(professional *root, int key)
 {
@@ -874,6 +905,7 @@ professional *deleteNodepro(professional *root, int key)
       }
       return root;
 }
+
 void decendingsorted(personal *root)
 {
       if (root == NULL)
@@ -893,4 +925,50 @@ void decendingsortedpro(professional *root)
       decendingsortedpro(root->right);
       printf("%d \t %s \t %s \t %s \t %s \t %s \t %d n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
       decendingsortedpro(root->left);
+}
+
+personal *insert_phone_name(personal *new, char *fn, char *ln, int phn, char *type)
+{
+      if (new == NULL)
+      {
+            new =newnode(phn ,fn, ln, type);
+            return new;
+      }
+
+      else if (strcmp(fn, new->name) > 0|| (strcmp(fn, new->name) == 0 && strcmp(ln, new->lastname) > 0) || (strcmp(fn, new->name) == 0 && strcmp(ln, new->lastname) == 0 && phn >= new->mobile) )
+      {
+            new->right = insert_phone_name(new->right, fn, ln, phn, type);
+            if (getbalancefactor(new) == -2)
+            {
+                  if (strcmp((fn), (new->name)) > 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) > 0))
+                  {
+                        new = rotateleftt(new);
+                  }
+                  else
+                  {
+                     
+                        new = RL(new);   
+                  }
+                  printf("done in left");
+            }
+      }
+      else if (strcmp((fn), (new->name)) < 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) < 0) || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) == 0 && phn <= new->mobile))
+      {
+            new->left = insert_phone_name(new->left, fn, ln, phn, type);
+            if (getbalancefactor(new) == 2)
+            {
+                  if (strcmp((fn), (new->name)) < 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) < 0))
+                  {
+                        new = rotaterightt(new);
+                  }
+                  else
+                  {
+                        new = LR(new);
+                       
+                  }
+                   printf("done in left");
+            }
+      }
+      new->height = max(getheightpersonal(new->left), getheightpersonal(new->right)) + 1;
+      return new;
 }
