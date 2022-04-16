@@ -441,6 +441,7 @@ personal *rightrotate(personal *y)
       personal *t2 = x->right;
       x->right = y;
       y->left = t2;
+
       y->height = max(getheightpersonal(y->left), getheightpersonal(y->right)) + 1;
       x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
       return x;
@@ -459,8 +460,8 @@ professional *rightrotatepro(professional *y)
            y
          /   \
        x     t3
-    /  \
-  t1    t2
+     /  \
+   t1    t2
 */
 personal *leftrotate(personal *x)
 {
@@ -472,6 +473,7 @@ personal *leftrotate(personal *x)
       x->height = max(getheightpersonal(x->left), getheightpersonal(x->right)) + 1;
       return y;
 }
+
 professional *leftrotatepro(professional *x)
 {
       professional *y = x->right;
