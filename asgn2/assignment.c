@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <time.h>
-#include <stdint.h>
-
 typedef struct nodetag
 {
-      uint64_t mobile;
+      long long unsigned int mobile;
       char name[20];
       char lastname[20];
       char type[20];
@@ -14,62 +13,62 @@ typedef struct nodetag
       struct nodetag *right;
       int height;
 } personal;
-
 typedef struct node_tag
 {
-      uint64_t mobile;
+      long long unsigned int mobile;
       char name[20];
       char lastname[20];
       char type[20];
       char email[20];
       char address[20];
-      uint64_t officeno;
+      long long unsigned int officeno;
       struct node_tag *left;
       struct node_tag *right;
-      uint64_t height;
+      long long unsigned int height;
 } professional;
-
-
 int getheightpersonal(personal *root);
 int getheightprofessional(professional *root);
 int getbalancefactor(personal *root);
 int getbalancefactorprofessional(professional *root);
 int max(int a, int b);
-professional *pronode(uint64_t mobile, char *name, char *lastname, char *type, char *email, char *address, uint64_t officeno);
+professional *pronode(long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, long long unsigned int officeno);
 professional *rightrotatepro(professional *y);
 professional *leftrotatepro(professional *x);
-professional *insertpro(professional *root, uint64_t mobile, char *name, char *lastname, char *type, char *email, char *address, uint64_t officeno, FILE *pro);
-professional *searchinprofessional(professional *root, uint64_t key);
-professional *search_name_professional(professional *root, char* key);
+professional *insertpro(professional *root, long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, long long unsigned int officeno, FILE *pro);
+professional *searchinprofessional(professional *root, long long unsigned int key);
 professional *minValueNodepro(professional *node);
-professional *deleteNodepro(professional *root, uint64_t key);
+professional *deleteNodepro(professional *root, long long unsigned int key,FILE *fp1);
 void decendingsorted(personal *root);
 void decendingsortedpro(professional *root);
-void editcontact(personal *root, uint64_t key, FILE *fp1);
-void edit_professional_contact(professional *rootpro, uint64_t key, FILE *fp1);
-void range(personal *root, uint64_t low, uint64_t high);
-void rangepro(professional *root, uint64_t low, uint64_t high);
+void editcontact(personal *root, long long unsigned int key, FILE *fp);
+void edit_professional_contact(professional *rootpro, long long unsigned int key, FILE *fp1);
+void range(personal *root, long long unsigned int low, long long unsigned int high);
+void rangepro(professional *root, long long unsigned int low, long long unsigned int high);
 void printdatainfiles(FILE *fptr);
 void printdatainfilesinprof(FILE *fptr);
 void inorder(personal *root);
 void inorderpro(professional *root);
-personal *insert_phone_name(personal *new, char *fn, char *ln, uint64_t phn, char *type);
+personal *insert_phone_name(personal *root, long long unsigned int mobile, char *name, char *lastname, char *type);
 personal *LR(personal *T);
 personal *RL(personal *T);
 personal *rotateleftt(personal *x);
 personal *rotaterightt(personal *x);
-personal *insert(personal *root, uint64_t mobile, char *name, char *lastname, char *type, FILE *fp1);
-personal *newnode(uint64_t mobile, char *name, char *lastname, char *type);
-personal *search(personal *root, uint64_t key);
-personal *searchwithname(personal *root, char *key);
+personal *insert(personal *root, long long unsigned int mobile, char *name, char *lastname, char *type, FILE *fp1);
+personal *newnode(long long unsigned int mobile, char *name, char *lastname, char *type);
+personal *search(personal *root, long long unsigned int key);
+void searchwithname(personal *root, char *key, int *flag);
+void searchwithnamepro(professional *root, char *key, int *flag);
 personal *minValueNode(personal *node);
-personal *deleteNode(personal *root, uint64_t key);
-
+personal *deleteNode(personal *root, long long unsigned int key, FILE *fp1);
+personal *inorder_sorted(personal *root, personal *newroot);
+professional *inorder_sortedpro(professional *root, professional *newroot);
 int main()
 {
       personal *root = NULL;
       professional *rootpro = NULL;
       personal *newroot = NULL;
+      professional *newrootpro = NULL;
+      printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>welcome to phonebook - BT20CSE067 <<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
       FILE *fp1 = NULL;
       fp1 = fopen("personal.txt", "a+");
       time_t t;
@@ -82,6 +81,7 @@ int main()
       int flag = 0;
       while (flag != 1)
       {
+            printf("\n...................................................................................................\n");
             printf("Enter 1 for insertion of contact \n");
             printf("Enter 2 for edit the contact \n");
             printf("Enter 3 for deletion of contact \n");
@@ -94,7 +94,6 @@ int main()
             int choice;
             printf("Enter the choice: ");
             scanf("%d", &choice);
-
             switch (choice)
             {
             case 1: //* done
@@ -102,7 +101,7 @@ int main()
                   int choice1;
                   scanf("%d", &choice1);
                   printf("Enter the mobile number: \n");
-                  uint64_t mobile = 0;
+                  long long unsigned int mobile = 0;
                   scanf("%llu", &mobile);
                   printf("Enter the name: \n");
                   char name[20] = {'\0'};
@@ -113,10 +112,17 @@ int main()
                   printf("Enter the type: \n");
                   char type[20] = {'\0'};
                   scanf("%s", type);
+                  
+
                   if (choice1 == 1)
-                  {
+                  {     personal *n = search(root, mobile);
+                        if (n != NULL)
+                        { 
+                              printf("\n>>>>>>contact already exists\n\n");
+                              break;
+                        }
                         root = insert(root, mobile, name, lastname, type, fp1);
-                        newroot = insert_phone_name(newroot, name, lastname, mobile, type);
+                        printf("\n");
                   }
                   else if (choice1 == 2)
                   {
@@ -127,13 +133,20 @@ int main()
                         char address[20];
                         scanf("%s", address);
                         printf("Enter the office number: \n");
-                        uint64_t officeno;
+                        long long unsigned int officeno;
                         scanf("%llu", &officeno);
+
+                        professional *n = searchinprofessional(rootpro, mobile);
+                        if (n != NULL)
+                        {
+                              printf("\n>>>>>>contact already exists\n\n");
+                              break;
+                        }
                         rootpro = insertpro(rootpro, mobile, name, lastname, type, email, address, officeno, fp1);
                   }
                   else
                   {
-                        printf("invalid choice\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
                   break;
             case 2: //* done
@@ -142,12 +155,11 @@ int main()
                   int choice2;
                   scanf("%d", &choice2);
                   printf("Enter the mobile number: \n");
-                  uint64_t mobile2 = 0;
+                  long long unsigned int mobile2 = 0;
                   scanf("%llu", &mobile2);
                   if (choice2 == 1)
                   {
                         editcontact(root, mobile2, fp1);
-                        editcontact(newroot, mobile2, fp1);
                   }
                   else if (choice2 == 2)
                   {
@@ -155,9 +167,8 @@ int main()
                   }
                   else
                   {
-                        printf("invalid choice\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
-
                   break;
             case 3: //* done
                   // delete the contact
@@ -166,22 +177,40 @@ int main()
                   scanf("%d", &choice3);
                   if (choice3 == 1)
                   {
+
                         printf("Enter the mobile number: \n");
-                        uint64_t mobile = 0;
-                        scanf("%llu", &mobile);
-                        root = deleteNode(root, mobile);
-                        newroot = deleteNode(newroot, mobile);
+                        long long unsigned int mobile3 = 0;
+                        scanf("%llu", &mobile3);
+                        personal *n = search(root, mobile3);
+                        if (n == NULL)
+                        {
+                              printf("\n>>>>>>contact does not exist\n\n");
+                              break;
+                        }
+
+                        root = deleteNode(root, mobile3, fp1);
+                        printf("\n>>>>>>contact deleted\n\n");
+                        break;
                   }
                   else if (choice3 == 2)
                   {
                         printf("Enter the mobile number: \n");
-                        uint64_t mobile = 0;
-                        scanf("%llu", &mobile);
-                        rootpro = deleteNodepro(rootpro, mobile);
+                        long long unsigned int mobile3 = 0;
+                        scanf("%llu", &mobile3);
+                        professional *n = searchinprofessional(rootpro, mobile3);
+                        if (n == NULL)
+                        {
+                              printf("\n>>>>>>contact does not exist\n\n");
+                              break;
+                        }
+                        rootpro = deleteNodepro(rootpro, mobile3,fp1);
+                        printf("\n>>>>>>contact deleted\n\n");
+
+                        break;
                   }
                   else
                   {
-                        printf("invalid choice\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
                   break;
             case 4: //* done  search  the contact
@@ -195,7 +224,7 @@ int main()
                   if (ch == 1)
                   {
                         printf("Enter the number to be searched in phonebook\n");
-                        uint64_t key = 0;
+                        long long unsigned int key = 0;
                         scanf("%llu", &key);
 
                         if (choice4 == 1)
@@ -203,12 +232,12 @@ int main()
                               personal *n = search(root, key);
                               if (n == NULL)
                               {
-                                    printf("mobile number not found in phonebook\n\n");
+                                    printf("\n>>>>>>mobile number not found in phonebook\n\n");
                                     break;
                               }
                               if (n->mobile == key)
                               {
-                                    printf("mobile number found in phonebook\n\n");
+                                    printf("\n>>>>>>mobile number found in phonebook\n\n");
                                     printf("\n\nfound contact details:%llu %s %s %s\n\n", n->mobile, n->name, n->lastname, n->type);
                               }
                         }
@@ -217,54 +246,48 @@ int main()
                               professional *n = searchinprofessional(rootpro, key);
                               if (n == NULL)
                               {
-                                    printf("mobile number not found in phonebook\n\n");
+                                    printf("\n>>>>>>mobile number not found in phonebook\n\n");
                                     break;
                               }
                               if (n->mobile == key)
                               {
-                                    printf("mobile number found in phonebook\n\n");
+                                    printf("\n>>>>>>mobile number found in phonebook\n\n");
                                     printf("\n\nfound contact details:%llu %s %s %s %s %s %llu\n\n", n->mobile, n->name, n->lastname, n->type, n->email, n->address, n->officeno);
                               }
                         }
                         else
                         {
-                              printf("invalid choice \n\n");
+                              printf("\n>>>>>>invalid choice \n\n");
                         }
-                  }else{
+                  }
+                  else
+                  {
                         printf("Enter the name to be searched in phonebook\n");
                         char key[20] = {'\0'};
                         scanf("%s", key);
                         if (choice4 == 1)
                         {
-                              personal *n = searchwithname(newroot, key);
-                              if (n == NULL)
+                              int flag = 0;
+                              searchwithname(root, key, &flag);
+                              if (flag == 0)
                               {
-                                    printf("name not found in phonebook\n\n");
+                                    printf("\n>>>>>>name not found in phonebook\n\n");
                                     break;
-                              }
-                              if (strcmp(n->name, key) == 0)
-                              {
-                                    printf("name found in phonebook\n\n");
-                                    printf("\n\nfound contact details:%llu %s %s %s\n\n", n->mobile, n->name, n->lastname, n->type);
                               }
                         }
                         else if (choice4 == 2)
                         {
-                              professional *n = search_name_professional(rootpro, key);
-                              if (n == NULL)
+                              int flag = 0;
+                              searchwithnamepro(rootpro, key, &flag);
+                              if (flag == 0)
                               {
-                                    printf("name not found in phonebook\n\n");
+                                    printf("\n>>>>>>name not found in phonebook\n\n");
                                     break;
-                              }
-                              if (strcmp(n->name, key) == 0)
-                              {
-                                    printf("name found in phonebook\n\n");
-                                    printf("\n\nfound contact details:%llu %s %s %s %s %s %llu\n\n", n->mobile, n->name, n->lastname, n->type, n->email, n->address, n->officeno);
                               }
                         }
                         else
                         {
-                              printf("invalid choice \n\n");
+                              printf("\n>>>>>>invalid choice \n\n");
                         }
                   }
 
@@ -291,7 +314,7 @@ int main()
                         }
                         else
                         {
-                              printf("invalid choice \n\n");
+                              printf("\n>>>>>>invalid choice \n\n");
                         }
                   }
                   else if (choice5 == 2)
@@ -309,12 +332,12 @@ int main()
                         }
                         else
                         {
-                              printf("invalid choice \n\n");
+                              printf("\n>>>>>>invalid choice \n\n");
                         }
                   }
                   else
                   {
-                        printf("invalid choice \n\n");
+                        printf("\n>>>>>>invalid choice \n\n");
                   }
                   break;
             case 6: //* done
@@ -349,7 +372,7 @@ int main()
 
                   else
                   {
-                        printf("invalid choice\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
 
                   break;
@@ -360,29 +383,39 @@ int main()
                   scanf("%d", &choice7);
                   if (choice7 == 1)
                   {
-                        printf("Enter the lower limit of contact: \n");
-                        int lower = 0;
-                        scanf("%d", &lower);
-                        printf("Enter the upper limit of contact: \n");
-                        int upper = 0;
-                        scanf("%d", &upper);
+                        printf("Enter the lower limit of contact number: \n");
+                        long long unsigned int lower = 0;
+                        scanf("%llu", &lower);
+                        printf("Enter the upper limit of contact number: \n");
+                        long long unsigned int upper = 0;
+                        scanf("%llu", &upper);
+                        if (lower > upper)
+                        {
+                              printf("\n>>>>>>invalid operation : lower limit cannot be greater than upper limit of contact\n");
+                              break;
+                        }
                         printf("mobile \t name \t lastname \t type\n");
                         range(root, lower, upper);
                   }
                   else if (choice7 == 2)
                   {
                         printf("Enter the lower limit of contact: \n");
-                        int lower = 0;
-                        scanf("%d", &lower);
+                        long long unsigned int lower = 0;
+                        scanf("%llu", &lower);
                         printf("Enter the upper limit of contact: \n");
-                        int upper = 0;
-                        scanf("%d", &upper);
+                        long long unsigned int upper = 0;
+                        scanf("%llu", &upper);
+                        if (lower > upper)
+                        {
+                              printf("\n>>>>>>invalid operation : lower limit cannot be greater than upper limit of contact\n");
+                              break;
+                        }
                         printf("mobile \t name \t lastname \t type \t email \t address \t office no\n");
                         rangepro(rootpro, lower, upper);
                   }
                   else
                   {
-                        printf("invalid choice\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
                   break;
             case 8: // sort the records with names
@@ -391,29 +424,43 @@ int main()
                   scanf("%d", &choice8);
                   if (choice8 == 1)
                   {
+                        newroot = inorder_sorted(root, newroot);
+                        printf("\n\nmobile \t name \t lastname \t type\n");
                         inorder(newroot);
+                        newroot = NULL;
                   }
                   else if (choice8 == 2)
                   {
+                        newrootpro = inorder_sortedpro(rootpro, newrootpro);
+                        printf("\n\nmobile \t name \t lastname \t type \t email \t address \t office no\n");
+                        inorderpro(newrootpro);
+                        newrootpro = NULL;
                   }
                   else
                   {
-                        printf("invalid choice \n\n");
+                        printf("\n>>>>>>invalid choice\n");
                   }
+
                   break;
             case 0:
             {
                   flag = 1;
-                  printf("program terminated\n");
+                  printf("\n>>>>>>program terminated\n");
 
                   break;
             }
             default:
-                  printf("\ninvalid choice\n");
+                  printf("\n\n>>>>>>invalid choice\n");
                   break;
             }
       }
-
+      free(root);
+      free(rootpro);
+      free(newroot);
+      free(newrootpro);
+      printf(">>>>>deleted the personal and professional contact tree generated\n");
+      printf("thank you for using the program\n");
+      printf("\n>>>>>>>>>>>> BT20CSE067 SUSHANT SANJIV KOGURWAR\n");
       return 0;
 }
 
@@ -444,7 +491,7 @@ int getbalancefactorprofessional(professional *root)
       else
             return getheightprofessional(root->left) - getheightprofessional(root->right);
 }
-personal *newnode(uint64_t mobile, char *name, char *lastname, char *type)
+personal *newnode(long long unsigned int mobile, char *name, char *lastname, char *type)
 {
       personal *n = (personal *)malloc(sizeof(personal));
       strcpy(n->name, name);
@@ -461,7 +508,7 @@ int max(int a, int b)
 {
       return (a > b) ? a : b;
 }
-professional *pronode(uint64_t mobile, char *name, char *lastname, char *type, char *email, char *address, uint64_t officeno)
+professional *pronode(long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, long long unsigned int officeno)
 {
       professional *n = (professional *)malloc(sizeof(professional));
       strcpy(n->name, name);
@@ -476,15 +523,15 @@ professional *pronode(uint64_t mobile, char *name, char *lastname, char *type, c
       n->height = 1;
       return n;
 }
-personal *insert(personal *root, uint64_t mobile, char *name, char *lastname, char *type, FILE *fp1)
+personal *insert(personal *root, long long unsigned int mobile, char *name, char *lastname, char *type, FILE *fp1)
 {
-      // insert like bst
       if (root == NULL)
       {
             fopen("personal.txt", "a+");
             root = newnode(mobile, name, lastname, type);
             fprintf(fp1, "%llu\t%s\t%s\t%s\n", mobile, name, lastname, type);
             fclose(fp1);
+            printf(">>>>>contact inserted\n");
             return root;
       }
 
@@ -514,16 +561,15 @@ personal *insert(personal *root, uint64_t mobile, char *name, char *lastname, ch
 
       return root;
 }
-professional *insertpro(professional *root, uint64_t mobile, char *name, char *lastname, char *type, char *email, char *address, uint64_t officeno, FILE *pro)
+professional *insertpro(professional *root, long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, long long unsigned int officeno, FILE *pro)
 {
-      // insert like bst
       if (root == NULL)
       {
             fopen("professional.txt", "a+");
             root = pronode(mobile, name, lastname, type, email, address, officeno);
             fprintf(pro, "%llu\t%s\t%s\t%s\t%s\t%s\t%llu\n", mobile, name, lastname, type, email, address, officeno);
             fclose(pro);
-            printf("new node created\n\n\n");
+            printf(">>>>>>>>>>>>>>new contact created\n\n\n");
             return root;
       }
 
@@ -571,7 +617,7 @@ void inorderpro(professional *root)
       if (root != NULL)
       {
             inorderpro(root->left);
-            printf("%llu %s %s %s %s %s %llu\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
+            printf("%llu %s %s %s %s %s %llu \n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
 
             inorderpro(root->right);
       }
@@ -605,7 +651,7 @@ void printdatainfilesinprof(FILE *fptr)
       char c;
       if (fptr == NULL)
       {
-            printf("Cannot open file \n");
+            printf(">>>>>>>>Cannot open file \n");
             exit(0);
       }
 
@@ -620,11 +666,10 @@ void printdatainfilesinprof(FILE *fptr)
       fclose(fptr);
       return;
 }
-personal *search(personal *root, uint64_t key)
+personal *search(personal *root, long long unsigned int key)
 {
       if (root == NULL)
       {
-
             return NULL;
       }
       if (root->mobile == key)
@@ -637,7 +682,7 @@ personal *search(personal *root, uint64_t key)
       }
       return search(root->right, key);
 }
-professional *searchinprofessional(professional *root, uint64_t key)
+professional *searchinprofessional(professional *root, long long unsigned int key)
 {
       if (root == NULL)
       {
@@ -653,39 +698,39 @@ professional *searchinprofessional(professional *root, uint64_t key)
       }
       return searchinprofessional(root->right, key);
 }
-personal *searchwithname(personal *root, char *key){
+void searchwithname(personal *root, char *key, int *flag)
+{
+
       if (root == NULL)
       {
-            return NULL;
+            return;
       }
       if (strcmp(root->name, key) == 0)
       {
-            return root;
+            printf(">>>>>>>>>contact found\n");
+            printf("%llu %s %s %s\n", root->mobile, root->name, root->lastname, root->type);
+            *flag = 1;
       }
-      if (strcmp(root->name, key) > 0)
-      {
-            return searchwithname(root->left, key);
-      }
-      return searchwithname(root->right, key);
+      searchwithname(root->left, key, flag);
+      searchwithname(root->right, key, flag);
 }
-professional *search_name_professional(professional *root, char* key){
+void searchwithnamepro(professional *root, char *key, int *flag)
+{
       if (root == NULL)
       {
-            return NULL;
+            return;
       }
       if (strcmp(root->name, key) == 0)
       {
-            return root;
+            printf(">>>>>>>>>contact found\n");
+            printf("%llu %s %s %s %s %s %llu\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
+            *flag = 1;
       }
-      professional *temp = search_name_professional(root->left, key);
-      if (temp != NULL)
-      {
-            return temp;
-      }
-      return search_name_professional(root->right, key);
+      searchwithnamepro(root->left, key, flag);
+      searchwithnamepro(root->right, key, flag);
 }
 
-void editcontact(personal *root, uint64_t key, FILE *fp)
+void editcontact(personal *root, long long unsigned int key, FILE *fp)
 {
       personal *temp = search(root, key);
       if (temp == NULL)
@@ -693,8 +738,6 @@ void editcontact(personal *root, uint64_t key, FILE *fp)
             printf("\nContact not found\n");
             return;
       }
-      printf("\nEnter new mobile no: ");
-      scanf("%llu", &temp->mobile);
       printf("\nEnter new name: ");
       scanf("%s", temp->name);
       printf("\nEnter new lastname: ");
@@ -702,12 +745,12 @@ void editcontact(personal *root, uint64_t key, FILE *fp)
 
       printf("\nEnter new type: ");
       scanf("%s", temp->type);
+      printf("\n>>>>>>>>>>>>>>updated contact details\n\n");
       fopen("personal.txt", "a+");
       fprintf(fp, "%llu\t%s\t%s\t%s  (updated contact of mobile no %llu ) \n", temp->mobile, temp->name, temp->lastname, temp->type, key);
       fclose(fp);
-      printf("\n\nupdated contact details\n\n");
 }
-void edit_professional_contact(professional *root, uint64_t key, FILE *fp)
+void edit_professional_contact(professional *root, long long unsigned int key, FILE *fp)
 {
       professional *temp = searchinprofessional(root, key);
       if (temp == NULL)
@@ -733,7 +776,7 @@ void edit_professional_contact(professional *root, uint64_t key, FILE *fp)
       printf("\n\nupdated contact details\n\n");
 }
 
-void range(personal *root, uint64_t low, uint64_t high)
+void range(personal *root, long long unsigned int low, long long unsigned int high)
 {
       if (root == NULL)
       {
@@ -747,17 +790,18 @@ void range(personal *root, uint64_t low, uint64_t high)
       range(root->left, low, high);
       range(root->right, low, high);
 }
-void rangepro(professional *root, uint64_t low, uint64_t high)
+void rangepro(professional *root, long long unsigned int low, long long unsigned int high)
 {
       if (root == NULL)
       {
             return;
       }
+      rangepro(root->left, low, high);
       if (root->mobile >= low && root->mobile <= high)
       {
             printf("%llu %s %s %s %s %s %llu\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
       }
-      rangepro(root->left, low, high);
+
       rangepro(root->right, low, high);
 }
 
@@ -769,7 +813,7 @@ personal *minValueNode(personal *node)
       return current;
 }
 
-personal *deleteNode(personal *root, uint64_t key)
+personal *deleteNode(personal *root, long long unsigned int key, FILE *fp1)
 {
       if (root == NULL)
       {
@@ -777,38 +821,36 @@ personal *deleteNode(personal *root, uint64_t key)
       }
       else if (key < root->mobile)
       {
-            root->left = deleteNode(root->left, key);
+            root->left = deleteNode(root->left, key, fp1);
       }
       else if (key > root->mobile)
-            root->right = deleteNode(root->right, key);
+            root->right = deleteNode(root->right, key, fp1);
       else
       {
             if (root->left == NULL)
             {
                   personal *temp = root->right;
-
-                  root->name[0] = '\0';
-                  root->lastname[0] = '\0';
-                  root->type[0] = '\0';
+                  fopen("personal.txt", "a+");
+                  fprintf(fp1, "%llu\t%s\t%s\t%s  (deleted contact of mobile no %llu ) \n", root->mobile, root->name, root->lastname, root->type, key);
+                  fclose(fp1);
                   free(root);
-                  root->mobile = 0;
+
                   return temp;
             }
             else if (root->right == NULL)
             {
                   personal *temp = root->left;
-                  root->name[0] = '\0';
-                  root->lastname[0] = '\0';
-                  root->type[0] = '\0';
+                  fopen("personal.txt", "a+");
+                  fprintf(fp1, "%llu\t%s\t%s\t%s  (deleted contact of mobile no %llu ) \n", root->mobile, root->name, root->lastname, root->type, key);
+                  fclose(fp1);
                   free(root);
-                  root->mobile = 0;
                   return temp;
             }
             else
             {
                   personal *temp = minValueNode(root->right);
                   root->mobile = temp->mobile;
-                  root->right = deleteNode(root->right, temp->mobile);
+                  root->right = deleteNode(root->right, temp->mobile, fp1);
             }
       }
 
@@ -836,6 +878,7 @@ personal *deleteNode(personal *root, uint64_t key)
       }
       return root;
 }
+
 professional *minValueNodepro(professional *node)
 {
       professional *current = node;
@@ -843,6 +886,7 @@ professional *minValueNodepro(professional *node)
             current = current->left;
       return current;
 }
+
 /* right rotate  after right rotation the root will be the left child of the right child of the root
            x
          /   \
@@ -903,63 +947,61 @@ personal *rotateleftt(personal *x)
       return y;
 }
 
-personal *LR(personal *T)
-{
-      T->left = rotateleftt(T->left);
-      T = rotaterightt(T);
-      return T;
-}
-
-personal *RL(personal *T)
-{
-      T->right = rotaterightt(T->right);
-      T = rotateleftt(T);
-      return T;
-}
-
-professional *deleteNodepro(professional *root, uint64_t key)
+professional *deleteNodepro(professional *root, long long unsigned int key, FILE *fp1)
 {
       if (root == NULL)
+      {
             return root;
-      if (key < root->mobile)
-            root->left = deleteNodepro(root->left, key);
+      }
+      else if (key < root->mobile)
+      {
+            root->left = deleteNodepro(root->left, key,fp1);
+      }
       else if (key > root->mobile)
-            root->right = deleteNodepro(root->right, key);
+            root->right = deleteNodepro(root->right, key, fp1);
       else
       {
-            if ((root->left == NULL) || (root->right == NULL))
+            if (root->left == NULL)
             {
-                  professional *temp = root->left ? root->left : root->right;
-                  if (temp == NULL)
-                  {
-                        temp = root;
-                        root = NULL;
-                  }
-                  else
-                        *root = *temp;
-                  free(temp);
+                  professional *temp = root->right;
+                  fopen("professional.txt", "a+");
+                  fprintf(fp1, "%llu\t%s\t%s\t%s  (deleted contact of mobile no %llu ) \n", root->mobile, root->name, root->lastname, root->type, key);
+                  fclose(fp1);
+
+                  free(root);
+                  return temp;
+            }
+            else if (root->right == NULL)
+            {
+                  professional *temp = root->left;
+                  fopen("professional.txt", "a+");
+                  fprintf(fp1, "%llu\t%s\t%s\t%s  (deleted contact of mobile no %llu ) \n", root->mobile, root->name, root->lastname, root->type, key);
+                  fclose(fp1);
+                  free(root);
+                  return temp;
             }
             else
             {
                   professional *temp = minValueNodepro(root->right);
                   root->mobile = temp->mobile;
-                  root->right = deleteNodepro(root->right, temp->mobile);
+                  root->right = deleteNodepro(root->right, temp->mobile, fp1);
             }
       }
       if (root == NULL)
             return root;
       root->height = 1 + max(getheightprofessional(root->left), getheightprofessional(root->right));
       int balance = getbalancefactorprofessional(root);
-      if (balance > 1 && getbalancefactorprofessional(root->left) >= 0)
+
+      if (balance == 2 && getbalancefactorprofessional(root->left) >= 0)
             return rightrotatepro(root);
-      if (balance > 1 && getbalancefactorprofessional(root->left) < 0)
+      else if (balance == 2 && getbalancefactorprofessional(root->left) == -1)
       {
             root->left = leftrotatepro(root->left);
             return rightrotatepro(root);
       }
-      if (balance < -1 && getbalancefactorprofessional(root->right) <= 0)
+      else if (balance == -2 && getbalancefactorprofessional(root->right) <= 0)
             return leftrotatepro(root);
-      if (balance < -1 && getbalancefactorprofessional(root->right) > 0)
+      else if (balance == -2 && getbalancefactorprofessional(root->right) == 1)
       {
             root->right = rightrotatepro(root->right);
             return leftrotatepro(root);
@@ -984,51 +1026,93 @@ void decendingsortedpro(professional *root)
             return;
 
       decendingsortedpro(root->right);
-      printf("%llu \t %s \t %s \t %s \t %s \t %s \t %d n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
+      printf("%llu \t %s \t %s \t %s \t %s \t %s \t %llu \n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
       decendingsortedpro(root->left);
 }
 
-personal *insert_phone_name(personal *new, char *fn, char *ln, uint64_t phn, char *type)
+personal *insert_phone_name(personal *root, long long unsigned int mobile, char *name, char *lastname, char *type)
 {
-      if (new == NULL)
+      if (root == NULL)
       {
-            new = newnode(phn, fn, ln, type);
-            return new;
+            root = newnode(mobile, name, lastname, type);
+            return root;
+      }
+      if (strcmp(name, root->name) < 0 || (strcmp(name, root->name) == 0 && mobile < root->mobile))
+            root->left = insert_phone_name(root->left, mobile, name, lastname, type);
+      else if (strcmp(name, root->name) > 0 || (strcmp(name, root->name) == 0 && mobile > root->mobile))
+            root->right = insert_phone_name(root->right, mobile, name, lastname, type);
+      else
+            return root;
+      root->height = max(getheightpersonal(root->left), getheightpersonal(root->right)) + 1;
+      int balance = getbalancefactor(root);
+      if (balance > 1 && strcmp(name, root->left->name) < 0)
+            return rotaterightt(root);
+      if (balance < -1 && strcmp(name, root->right->name) > 0)
+            return rotateleftt(root);
+      if (balance > 1 && strcmp(name, root->left->name) > 0)
+      {
+            root->left = rotateleftt(root->left);
+            return rotaterightt(root);
+      }
+      if (balance < -1 && strcmp(name, root->right->name) < 0)
+      {
+            root->right = rotaterightt(root->right);
+            return rotateleftt(root);
       }
 
-      else if (strcmp(fn, new->name) > 0 || (strcmp(fn, new->name) == 0 && strcmp(ln, new->lastname) > 0) || (strcmp(fn, new->name) == 0 && strcmp(ln, new->lastname) == 0 && phn >= new->mobile))
-      {
-            new->right = insert_phone_name(new->right, fn, ln, phn, type);
-            if (getbalancefactor(new) == -2)
-            {
-                  if (strcmp((fn), (new->name)) > 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) > 0))
-                  {
-                        new = rotateleftt(new);
-                  }
-                  else
-                  {
+      return root;
+}
 
-                        new = RL(new);
-                  }
-                  printf("done in left");
-            }
-      }
-      else if (strcmp((fn), (new->name)) < 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) < 0) || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) == 0 && phn <= new->mobile))
+professional *insert_phone_namepro(professional *root, long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, int officeno)
+{
+      if (root == NULL)
       {
-            new->left = insert_phone_name(new->left, fn, ln, phn, type);
-            if (getbalancefactor(new) == 2)
-            {
-                  if (strcmp((fn), (new->name)) < 0 || (strcmp((fn), (new->name)) == 0 && strcmp((ln), (new->lastname)) < 0))
-                  {
-                        new = rotaterightt(new);
-                  }
-                  else
-                  {
-                        new = LR(new);
-                  }
-                  printf("done in left");
-            }
+            root = pronode(mobile, name, lastname, type, email, address, officeno);
+            return root;
       }
-      new->height = max(getheightpersonal(new->left), getheightpersonal(new->right)) + 1;
-      return new;
+      if (strcmp(name, root->name) < 0 || (strcmp(name, root->name) == 0 && mobile < root->mobile))
+            root->left = insert_phone_namepro(root->left, mobile, name, lastname, type, email, address, officeno);
+      else if (strcmp(name, root->name) > 0 || (strcmp(name, root->name) == 0 && mobile > root->mobile))
+            root->right = insert_phone_namepro(root->right, mobile, name, lastname, type, email, address, officeno);
+      else
+            return root;
+      root->height = max(getheightprofessional(root->left), getheightprofessional(root->right)) + 1;
+      int balance = getbalancefactorprofessional(root);
+      if (balance > 1 && strcmp(name, root->left->name) < 0)
+            return rightrotatepro(root);
+      if (balance < -1 && strcmp(name, root->right->name) > 0)
+            return leftrotatepro(root);
+      if (balance > 1 && strcmp(name, root->left->name) > 0)
+      {
+            root->left = leftrotatepro(root->left);
+            return rightrotatepro(root);
+      }
+      if (balance < -1 && strcmp(name, root->right->name) < 0)
+      {
+            root->right = rightrotatepro(root->right);
+            return leftrotatepro(root);
+      }
+
+      return root;
+}
+
+personal *inorder_sorted(personal *root, personal *newroot)
+{
+      if (root == NULL)
+            return newroot;
+      newroot = inorder_sorted(root->left, newroot);
+      newroot = insert_phone_name(newroot, root->mobile, root->name, root->lastname, root->type);
+      newroot = inorder_sorted(root->right, newroot);
+      return newroot;
+}
+
+professional *inorder_sortedpro(professional *root, professional *newroot)
+{
+      if (root == NULL)
+            return newroot;
+      newroot = inorder_sortedpro(root->left, newroot);
+      newroot = insert_phone_namepro(newroot, root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
+      newroot = inorder_sortedpro(root->right, newroot);
+      printf("\n");
+      return newroot;
 }
