@@ -1,3 +1,5 @@
+// Name : SUSHANT sanjiv kogurwar - BT20CSE067
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +39,7 @@ professional *leftrotatepro(professional *x);
 professional *insertpro(professional *root, long long unsigned int mobile, char *name, char *lastname, char *type, char *email, char *address, long long unsigned int officeno, FILE *pro);
 professional *searchinprofessional(professional *root, long long unsigned int key);
 professional *minValueNodepro(professional *node);
-professional *deleteNodepro(professional *root, long long unsigned int key,FILE *fp1);
+professional *deleteNodepro(professional *root, long long unsigned int key, FILE *fp1);
 void decendingsorted(personal *root);
 void decendingsortedpro(professional *root);
 void editcontact(personal *root, long long unsigned int key, FILE *fp);
@@ -112,12 +114,12 @@ int main()
                   printf("Enter the type: \n");
                   char type[20] = {'\0'};
                   scanf("%s", type);
-                  
 
                   if (choice1 == 1)
-                  {     personal *n = search(root, mobile);
+                  {
+                        personal *n = search(root, mobile);
                         if (n != NULL)
-                        { 
+                        {
                               printf("\n>>>>>>contact already exists\n\n");
                               break;
                         }
@@ -203,7 +205,7 @@ int main()
                               printf("\n>>>>>>contact does not exist\n\n");
                               break;
                         }
-                        rootpro = deleteNodepro(rootpro, mobile3,fp1);
+                        rootpro = deleteNodepro(rootpro, mobile3, fp1);
                         printf("\n>>>>>>contact deleted\n\n");
 
                         break;
@@ -299,7 +301,7 @@ int main()
                   scanf("%d", &choice5);
                   if (choice5 == 1)
                   {
-                        printf("Enter the 1 for sorting in ascending order and 2 for descending order \n");
+                        printf("Enter the 1 for sorting in ascending order and 2 for descending order of the contact number\n");
                         int choice6 = 0;
                         scanf("%d", &choice6);
                         if (choice6 == 1)
@@ -319,7 +321,7 @@ int main()
                   }
                   else if (choice5 == 2)
                   {
-                        printf("Enter the 1 for sorting in ascending order and 2 for descending order \n");
+                        printf("Enter the 1 for sorting in ascending order and 2 for descending order of the contact number\n");
                         int choice6 = 0;
                         scanf("%d", &choice6);
                         if (choice6 == 1)
@@ -735,7 +737,7 @@ void editcontact(personal *root, long long unsigned int key, FILE *fp)
       personal *temp = search(root, key);
       if (temp == NULL)
       {
-            printf("\nContact not found\n");
+            printf("\n>>>>>>>>>>>Contact not found\n");
             return;
       }
       printf("\nEnter new name: ");
@@ -755,7 +757,7 @@ void edit_professional_contact(professional *root, long long unsigned int key, F
       professional *temp = searchinprofessional(root, key);
       if (temp == NULL)
       {
-            printf("\nContact not found\n");
+            printf("\n>>>>>>>>>Contact not found\n");
             return;
       }
       printf("\nEnter new name: ");
@@ -796,12 +798,12 @@ void rangepro(professional *root, long long unsigned int low, long long unsigned
       {
             return;
       }
-      rangepro(root->left, low, high);
+
       if (root->mobile >= low && root->mobile <= high)
       {
             printf("%llu %s %s %s %s %s %llu\n", root->mobile, root->name, root->lastname, root->type, root->email, root->address, root->officeno);
       }
-
+      rangepro(root->left, low, high);
       rangepro(root->right, low, high);
 }
 
@@ -955,7 +957,7 @@ professional *deleteNodepro(professional *root, long long unsigned int key, FILE
       }
       else if (key < root->mobile)
       {
-            root->left = deleteNodepro(root->left, key,fp1);
+            root->left = deleteNodepro(root->left, key, fp1);
       }
       else if (key > root->mobile)
             root->right = deleteNodepro(root->right, key, fp1);
